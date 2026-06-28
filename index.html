@@ -89,9 +89,7 @@ select option{background:#1a1a1a;}
 .pk-slots-3{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0;touch-action:none;}
 </style>
 <style>
-#sw-update-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#FF6B00;color:#fff;font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;letter-spacing:.05em;padding:10px 14px;text-align:center;align-items:center;justify-content:space-between;gap:10px;}
-#sw-update-banner.show{display:flex;}
-#sw-update-banner button{background:#fff;color:#FF6B00;border:none;border-radius:4px;font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;padding:4px 10px;cursor:pointer;flex-shrink:0;}
+
 </style>
 <style>
 /* ── iPad (768–1024px): jerseys ~20% smaller ── */
@@ -126,11 +124,7 @@ select option{background:#1a1a1a;}
 </style>
 </head>
 <body>
-<!-- UPDATE BANNER -->
-<div id="sw-update-banner">
-  <span>🏒 New version available!</span>
-  <button onclick="swDoUpdate()">UPDATE NOW</button>
-</div>
+
 <div id="hdr">
   <div class="logo">
     <div class="logo-img" id="logo-wrap">
@@ -681,26 +675,15 @@ document.getElementById("nb-admin").onclick=function(){showPg("admin");};
 
 /* ── PRINT ── */
 function doPrint(html){
-  /* iOS home-screen apps block window.open — use a hidden iframe instead */
-  var existing=document.getElementById("__printFrame");
-  if(existing) existing.parentNode.removeChild(existing);
-  var iframe=document.createElement("iframe");
-  iframe.id="__printFrame";
-  iframe.style.cssText="position:fixed;top:-9999px;left:-9999px;width:800px;height:600px;border:none;";
-  document.body.appendChild(iframe);
-  var doc=iframe.contentWindow.document;
-  doc.open();doc.write(html);doc.close();
-  setTimeout(function(){
-    try{
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-    }catch(e){
-      /* fallback: open in new tab (non-PWA) */
-      var w=window.open("","_blank","width=800,height=700");
-      if(w){w.document.write(html);w.document.close();w.focus();setTimeout(function(){w.print();},400);}
-    }
-    setTimeout(function(){if(iframe.parentNode)iframe.parentNode.removeChild(iframe);},2000);
-  },400);
+  /* Body-swap method — works on iOS PWA and desktop */
+  var realBody = document.body.innerHTML;
+  var realTitle = document.title;
+  document.body.innerHTML = html;
+  window.print();
+  document.body.innerHTML = realBody;
+  document.title = realTitle;
+  /* Re-attach event listeners lost by innerHTML swap */
+  location.reload();
 }
 
 function printPage(page){
@@ -2001,50 +1984,13 @@ setTimeout(function(){
 </script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<!-- SERVICE WORKER REGISTRATION -->
 <script>
-(function(){
-  if(!('serviceWorker' in navigator)) return;
-
-  var _swReg = null;
-
-  navigator.serviceWorker.register('/MinookaLineUp26/sw.js', {scope: '/MinookaLineUp26/'})
-    .then(function(reg){
-      _swReg = reg;
-
-      // If there's already a waiting worker on first load, show banner
-      if(reg.waiting){ showUpdateBanner(reg.waiting); return; }
-
-      // Listen for a new SW found during this session
-      reg.addEventListener('updatefound', function(){
-        var newWorker = reg.installing;
-        newWorker.addEventListener('statechange', function(){
-          if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
-            showUpdateBanner(newWorker);
-          }
-        });
-      });
-    })
-    .catch(function(err){ console.warn('SW registration failed:', err); });
-
-  // When the new SW takes control, reload to get the fresh page
-  navigator.serviceWorker.addEventListener('controllerchange', function(){
-    window.location.reload();
+/* Unregister any lingering service workers from previous builds */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(r){ r.unregister(); });
   });
-
-  function showUpdateBanner(worker){
-    var banner = document.getElementById('sw-update-banner');
-    if(banner){ banner.classList.add('show'); }
-    window._swWaiting = worker;
-  }
-
-  window.swDoUpdate = function(){
-    if(window._swWaiting){
-      window._swWaiting.postMessage({type:'SKIP_WAITING'});
-    }
-  };
-})();
+}
 </script>
 </body>
 </html>
