@@ -108,13 +108,14 @@ select option{background:#1a1a1a;}
   .snm{font-size:6px;}
   .pp-pos-lbl{font-size:7px;padding:1px 0;}
 }
-/* ── Desktop (>1024px): jerseys ~40% smaller ── */
+/* ── Desktop (>1024px): jerseys fit viewport ── */
 @media (min-width:1025px){
   #lgrid,#psgrid{
-    grid-template-rows:20px repeat(8,minmax(0,52px));
+    grid-template-rows:20px repeat(8,minmax(0,1fr));
     max-height:calc(100vh - 120px);
+    height:calc(100vh - 120px);
   }
-  #lgrid.tryout{grid-template-rows:20px repeat(10,68px) !important;}
+  #lgrid.tryout{grid-template-rows:20px repeat(10,minmax(0,1fr)) !important;height:auto !important;}
   .pp-unit{max-height:calc((100vh - 140px)/2);}
   .pk-unit{max-height:calc((100vh - 160px)/2);}
   .pos-hdr{font-size:8px;}
@@ -350,7 +351,7 @@ select option{background:#1a1a1a;}
     <button class="strip-btn" onclick="scrollStrip('strip-l',80)">›</button>
   </div>
   <!-- Regular grid (V and JV) -->
-  <div id="lgrid" style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:20px repeat(8,1fr);gap:0;overflow:hidden;touch-action:none;padding:0 6px;background:#1c1c1c;"></div>
+  <div id="lgrid" style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0;overflow:hidden;touch-action:none;padding:0 6px;background:#1c1c1c;"></div>
   <!-- Tryout grid: single scroll, F+D side by side, G under D -->
   <div id="tr-grid" style="display:none;flex:1;min-height:0;position:relative;overflow:hidden;background:#111;">
     <!-- Single scrollable container -->
