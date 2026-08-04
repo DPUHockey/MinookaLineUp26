@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v3.1 — logo.png extracted (729KB→105KB); absent checkbox + lineup filter -->
+<!-- MinookaLineUp26 v3.2 — visible version badge; ACT checkbox (checked=active); notes date-stamp -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,7 +132,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY</div></div>
+    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY <span style="font-size:6px;color:#FF6B00;border:1px solid #FF6B00;border-radius:2px;padding:0 3px;margin-left:3px;letter-spacing:.05em;">v3.2</span></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -877,7 +877,17 @@ function savePlayerCard(){
   p.year=document.getElementById("pc-edit-year").value;
   p.height=document.getElementById("pc-edit-height").value.trim();
   p.weight=document.getElementById("pc-edit-weight").value.trim();
-  p.notes=document.getElementById("pc-notes").value.trim();
+  var rawNotes=document.getElementById("pc-notes").value.trim();
+  var oldNotes=p.notes||"";
+  /* If notes changed, prepend a date stamp on the new/added text */
+  if(rawNotes !== oldNotes && rawNotes){
+    var today=new Date();
+    var stamp="["+( today.getMonth()+1)+"/"+today.getDate()+"/"+today.getFullYear()+"] ";
+    /* If the new text already starts with a bracket date, don't double-stamp */
+    p.notes = /^\[\d/.test(rawNotes) ? rawNotes : stamp+rawNotes;
+  } else {
+    p.notes = rawNotes;
+  }
   if(db) db.ref("players/"+cardPid).update({
     name:p.name,number:p.number,pos:p.pos,shot:p.shot,
     team:p.team,year:p.year,height:p.height||null,weight:p.weight||null,notes:p.notes||null
@@ -927,7 +937,7 @@ function renderR(){
       '<span style="font-size:8px;font-weight:700;color:'+teamColor+';padding:1px 4px;border:1px solid '+teamColor+';border-radius:3px;flex-shrink:0;">'+teamLbl+'</span>'+
       removeBtn+
       '<label style="display:flex;align-items:center;gap:2px;flex-shrink:0;cursor:pointer;font-size:8px;color:#888;">'+
-        '<input class="babsent" type="checkbox"'+(p.absent?' checked':'')+' style="width:12px;height:12px;accent-color:#c03;cursor:pointer;"/>ABS'+
+        '<input class="babsent" type="checkbox"'+(p.active?' checked':'')+' style="width:12px;height:12px;accent-color:#4a4;cursor:pointer;"/>ACT'+
       '</label>'+
       '<button class="be">EDIT</button><button class="bd">DEL</button>';
     (function(pid){
@@ -973,11 +983,11 @@ function renderR(){
       if(absChk){
         absChk.onchange=function(){
           if(this.checked){
-            players[pid].absent=true;
-            if(db) db.ref("players/"+pid+"/absent").set(true);
+            players[pid].active=true;
+            if(db) db.ref("players/"+pid+"/active").set(true);
           } else {
-            delete players[pid].absent;
-            if(db) db.ref("players/"+pid+"/absent").remove();
+            delete players[pid].active;
+            if(db) db.ref("players/"+pid+"/active").remove();
           }
           renderR();
           renderLineupPage(curPage);
@@ -1024,9 +1034,9 @@ function usedIn(type){var s={};var lu=tl();var key=type==="sc"?"sc":type;for(var
 
 function teamPlayers(){
   /* strip shows players matching curTeam. Practice/scrimmage pages show all */
-  /* Absent players (checked on roster page) are excluded from all lineup strips */
+  /* Only players with active=true (ACT checkbox checked) appear in lineup strips */
   return Object.keys(players).filter(function(id){
-    if(players[id].absent) return false;
+    if(!players[id].active) return false;
     if(curPage==="ps") return true; /* scrimmage shows everyone */
     return (players[id].team||"tr")===curTeam;
   });
