@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v3.5 — tryout lines hides player strip, shows grid only -->
+<!-- MinookaLineUp26 v3.6 — desktop page show/hide fix; splitscreen eliminated -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,9 +123,12 @@ select option{background:#1a1a1a;}
   .slbl{font-size:4px;}
   .snm{font-size:6px;}
   .pp-pos-lbl{font-size:7px;padding:1px 0;}
+  /* Fix: ID selectors beat .pg{display:none} — explicitly re-hide all pages, show only .show */
+  #pgr,#pgl,#pgps,#pgpp,#pgpk,#pgadmin{display:none;flex-direction:column;}
+  #pgr.show,#pgl.show,#pgps.show,#pgpp.show,#pgpk.show,#pgadmin.show{display:flex;}
   /* Roster page desktop fixes */
-  #pgr{display:flex;flex-direction:column;align-items:center;}
-  #pgr > *{width:100%;max-width:700px;}
+  #pgr.show{align-items:center;}
+  #pgr.show > *{width:100%;max-width:700px;}
   .pr{gap:12px;padding:6px 10px;}
   .pnum{width:36px;height:36px;font-size:14px;}
   .pi .pn{font-size:24px;}
@@ -137,6 +140,7 @@ select option{background:#1a1a1a;}
   .logo-img img{width:52px;height:52px;}
   .lname{font-size:22px;}
   .lsub{font-size:10px;}
+  .lver{font-size:14px !important;}
   /* ACT checkbox desktop */
   .bact-lbl{font-size:14px;gap:5px;}
   .bact-lbl input{width:20px;height:20px;}
@@ -153,7 +157,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY <span style="font-size:6px;color:#FF6B00;border:1px solid #FF6B00;border-radius:2px;padding:0 3px;margin-left:3px;letter-spacing:.05em;">v3.5</span></div></div>
+    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY <span style="font-size:6px;color:#FF6B00;border:1px solid #FF6B00;border-radius:2px;padding:0 3px;margin-left:3px;letter-spacing:.05em;">v3.6</span></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
