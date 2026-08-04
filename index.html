@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v3.4 — TRY team blocked from lineup/PP/PK/Scrim pages -->
+<!-- MinookaLineUp26 v3.5 — tryout lines hides player strip, shows grid only -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -153,7 +153,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY <span style="font-size:6px;color:#FF6B00;border:1px solid #FF6B00;border-radius:2px;padding:0 3px;margin-left:3px;letter-spacing:.05em;">v3.4</span></div></div>
+    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY <span style="font-size:6px;color:#FF6B00;border:1px solid #FF6B00;border-radius:2px;padding:0 3px;margin-left:3px;letter-spacing:.05em;">v3.5</span></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -361,7 +361,7 @@ select option{background:#1a1a1a;}
     <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">LINES</span>
     <button id="btn-clear" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
   </div>
-  <div class="strip-wrap">
+  <div class="strip-wrap" data-for="l">
     <button class="strip-btn" onclick="scrollStrip('strip-l',-80)">‹</button>
     <div id="strip-l" class="strip" data-roster="l"></div>
     <button class="strip-btn" onclick="scrollStrip('strip-l',80)">›</button>
@@ -1113,7 +1113,9 @@ function renderLines(){
   var isTR=(curTeam==="tr");
   document.getElementById("lgrid").style.display=isTR?"none":"grid";
   document.getElementById("tr-grid").style.display=isTR?"flex":"none";
-  renderStrip("strip-l","l");
+  /* Hide the player strip entirely on tryout lines — drag from within the grid */
+  document.querySelector(".strip-wrap[data-for='l']") && (document.querySelector(".strip-wrap[data-for='l']").style.display=isTR?"none":"flex");
+  if(!isTR) renderStrip("strip-l","l");
 
   if(isTR){
     renderTRLines();
