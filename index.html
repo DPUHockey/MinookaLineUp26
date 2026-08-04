@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v3.2 — visible version badge; ACT checkbox (checked=active); notes date-stamp -->
+<!-- MinookaLineUp26 v3.3 — desktop roster max-width 700px, 2x fonts, logo fix, ACT checkbox scaled -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,6 +43,8 @@ select option{background:#1a1a1a;}
 .pnum{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#FF6B00,#c40);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;flex-shrink:0;}
 .pi{flex:1;}.pi .pn{font-size:13px;font-weight:700;color:#fff;font-family:'Barlow Condensed',sans-serif;line-height:1.1;}
 .pi .py{font-size:8px;color:#555;}
+.bact-lbl{display:flex;align-items:center;gap:3px;flex-shrink:0;cursor:pointer;font-size:8px;color:#4a4;font-weight:700;letter-spacing:.05em;}
+.bact-lbl input{width:13px;height:13px;}
 .be{padding:2px 5px;background:#181818;color:#FF6B00;border:1px solid #222;border-radius:2px;font-size:8px;}
 .bd{padding:2px 5px;background:#181818;color:#c03;border:1px solid #222;border-radius:2px;font-size:8px;}
 .bv{padding:1px 5px;background:#FF6B00;color:#fff;border:none;border-radius:2px;font-size:8px;font-weight:700;cursor:pointer;flex-shrink:0;}
@@ -121,6 +123,25 @@ select option{background:#1a1a1a;}
   .slbl{font-size:4px;}
   .snm{font-size:6px;}
   .pp-pos-lbl{font-size:7px;padding:1px 0;}
+  /* Roster page desktop fixes */
+  #pgr{display:flex;flex-direction:column;align-items:center;}
+  #pgr > *{width:100%;max-width:700px;}
+  .pr{gap:12px;padding:6px 10px;}
+  .pnum{width:36px;height:36px;font-size:14px;}
+  .pi .pn{font-size:24px;}
+  .pi .py{font-size:14px;}
+  .be,.bd{font-size:14px;padding:4px 10px;}
+  .bv,.bjv{font-size:14px;padding:3px 10px;}
+  /* Logo fix for desktop */
+  .logo-img{width:52px;height:52px;}
+  .logo-img img{width:52px;height:52px;}
+  .lname{font-size:22px;}
+  .lsub{font-size:10px;}
+  /* ACT checkbox desktop */
+  .bact-lbl{font-size:14px;gap:5px;}
+  .bact-lbl input{width:20px;height:20px;}
+  /* Pos/team badge spans in roster rows */
+  .pr > span{font-size:13px !important;padding:3px 7px !important;}
 }
 </style>
 </head>
@@ -132,7 +153,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY <span style="font-size:6px;color:#FF6B00;border:1px solid #FF6B00;border-radius:2px;padding:0 3px;margin-left:3px;letter-spacing:.05em;">v3.2</span></div></div>
+    <div><div class="lname">MINOOKA</div><div class="lsub">HOCKEY <span style="font-size:6px;color:#FF6B00;border:1px solid #FF6B00;border-radius:2px;padding:0 3px;margin-left:3px;letter-spacing:.05em;">v3.3</span></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -936,8 +957,8 @@ function renderR(){
       '<span style="font-size:8px;font-weight:700;color:'+posColor+';padding:1px 4px;border:1px solid '+posColor+';border-radius:3px;flex-shrink:0;">'+esc(p.pos||"F")+'</span>'+
       '<span style="font-size:8px;font-weight:700;color:'+teamColor+';padding:1px 4px;border:1px solid '+teamColor+';border-radius:3px;flex-shrink:0;">'+teamLbl+'</span>'+
       removeBtn+
-      '<label style="display:flex;align-items:center;gap:2px;flex-shrink:0;cursor:pointer;font-size:8px;color:#888;">'+
-        '<input class="babsent" type="checkbox"'+(p.active?' checked':'')+' style="width:12px;height:12px;accent-color:#4a4;cursor:pointer;"/>ACT'+
+      '<label class="bact-lbl">'+
+        '<input class="babsent" type="checkbox"'+(p.active?' checked':'')+' style="accent-color:#4a4;cursor:pointer;"/>ACT'+
       '</label>'+
       '<button class="be">EDIT</button><button class="bd">DEL</button>';
     (function(pid){
