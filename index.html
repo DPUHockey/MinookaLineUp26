@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v4.4 — ACT defaults to active; existing players show in strip -->
+<!-- MinookaLineUp26 v4.5 — strip-wrap by id; strip always visible on V/JV lines -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,7 +156,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.4</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.5</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -364,7 +364,7 @@ select option{background:#1a1a1a;}
     <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">LINES</span>
     <button id="btn-clear" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
   </div>
-  <div class="strip-wrap" data-for="l">
+  <div class="strip-wrap" id="strip-wrap-l">
     <button class="strip-btn" onclick="scrollStrip('strip-l',-80)">‹</button>
     <div id="strip-l" class="strip" data-roster="l"></div>
     <button class="strip-btn" onclick="scrollStrip('strip-l',80)">›</button>
@@ -624,12 +624,7 @@ function setTeam(t){
   /* update roster header */
   document.getElementById("team-lbl").textContent=TEAM_LABELS[t];
   renderR();
-  if(t==="tr" && curPage!=="r" && curPage!=="admin"){
-    curPage="r";
-    showPg("r");
-  } else {
-    renderLineupPage(curPage);
-  }
+  renderLineupPage(curPage);
 }
 
 /* ── nav ── */
@@ -1105,7 +1100,8 @@ function renderLines(){
   document.getElementById("lgrid").style.display=isTR?"none":"grid";
   document.getElementById("tr-grid").style.display=isTR?"flex":"none";
   /* Hide the player strip entirely on tryout lines — drag from within the grid */
-  document.querySelector(".strip-wrap[data-for='l']") && (document.querySelector(".strip-wrap[data-for='l']").style.display=isTR?"none":"flex");
+  var sw=document.getElementById("strip-wrap-l");
+  if(sw) sw.style.display=isTR?"none":"flex";
   if(!isTR) renderStrip("strip-l","l");
 
   if(isTR){
