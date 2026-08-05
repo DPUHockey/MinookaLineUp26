@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v3.9 — TRY nav: no disabled flag, showPg redirect -->
+<!-- MinookaLineUp26 v4.3 — nav fix; missed drop returns to strip; mobile meta -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +18,7 @@ body{display:flex;flex-direction:column;overflow:hidden;background:#1c1c1c;color
 button{font-family:'Oswald',sans-serif;cursor:pointer;touch-action:manipulation;}
 input,select{font-family:'Barlow Condensed',sans-serif;color:#fff;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;padding:5px 8px;font-size:14px;outline:none;width:100%;}
 select option{background:#1a1a1a;}
-#hdr{flex-shrink:0;height:48px;background:#0c0c0c;border-bottom:2px solid #FF6B00;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:6px;}
+#hdr{flex-shrink:0;height:48px;background:#0c0c0c;border-bottom:2px solid #FF6B00;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:6px;position:relative;z-index:100;}
 .logo{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .logo-img{width:34px;height:34px;border-radius:4px;object-fit:contain;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:22px;}
 .lname{font-size:15px;font-weight:700;color:#FF6B00;letter-spacing:.06em;}
@@ -156,7 +156,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v3.9</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.3</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -634,8 +634,6 @@ function setTeam(t){
 
 /* ── nav ── */
 function showPg(p){
-  /* TRY team has no lineup pages — silently stay on roster */
-  if(curTeam==="tr" && p!=="r" && p!=="admin") p="r";
   curPage=p;
   ["r","l","pp","pk","ps","admin"].forEach(function(x){
     document.getElementById("pg"+x).classList.remove("show");
