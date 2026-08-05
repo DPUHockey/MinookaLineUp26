@@ -624,11 +624,18 @@ function setTeam(t){
   /* update roster header */
   document.getElementById("team-lbl").textContent=TEAM_LABELS[t];
   renderR();
-  renderLineupPage(curPage);
+  if(t==="tr" && curPage!=="r" && curPage!=="admin"){
+    curPage="r";
+    showPg("r");
+  } else {
+    renderLineupPage(curPage);
+  }
 }
 
 /* ── nav ── */
 function showPg(p){
+  /* TRY team has no lineup pages — silently stay on roster */
+  if(curTeam==="tr" && p!=="r" && p!=="admin") p="r";
   curPage=p;
   ["r","l","pp","pk","ps","admin"].forEach(function(x){
     document.getElementById("pg"+x).classList.remove("show");
@@ -1600,10 +1607,22 @@ function attachDrag(el,pid,fromSlot,type){
           db.ref("lineups/"+curTeam+"/"+d.type).update(upd);
         }
       }
-    } else if(d.fromSlot){
-      delete lu[d.fromSlot];
-      renderLineupPage(curPage);
-      if(db) db.ref("lineups/"+curTeam+"/"+d.type+"/"+d.fromSlot).remove();
+    } else if(u&&u.closest("[data-roster]")){
+      /* Dropped back onto the strip — if from a slot, clear the slot */
+      if(d.fromSlot){
+        delete lu[d.fromSlot];
+        renderLineupPage(curPage);
+        if(db) db.ref("lineups/"+curTeam+"/"+d.type+"/"+d.fromSlot).remove();
+      } else {
+        renderLineupPage(curPage); /* strip drag returned to strip — no change */
+      }
+    } else {
+      /* Dropped on empty space — clear slot if from a slot, re-render strip */
+      if(d.fromSlot){
+        delete lu[d.fromSlot];
+        if(db) db.ref("lineups/"+curTeam+"/"+d.type+"/"+d.fromSlot).remove();
+      }
+      renderLineupPage(curPage); /* always re-render so strip shows player */
     }
   });
   el.addEventListener("pointercancel",function(){
