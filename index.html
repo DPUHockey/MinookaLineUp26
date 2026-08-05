@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v3.8 — version badge fits header; lineup pages restored -->
+<!-- MinookaLineUp26 v3.9 — TRY nav: no disabled flag, showPg redirect -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,7 +156,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v3.8</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v3.9</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -624,20 +624,14 @@ function setTeam(t){
   /* update roster header */
   document.getElementById("team-lbl").textContent=TEAM_LABELS[t];
   renderR();
-  /* On TRY: disable lineup nav buttons and force roster page */
+  /* On TRY: visually dim lineup nav buttons (showPg bounces them back anyway) */
   var lineupBtns=["nb-l","nb-pp","nb-pk","nb-ps"];
   lineupBtns.forEach(function(id){
     var b=document.getElementById(id);
     if(!b) return;
-    if(t==="tr"){
-      b.disabled=true;
-      b.style.opacity="0.25";
-      b.style.cursor="not-allowed";
-    } else {
-      b.disabled=false;
-      b.style.opacity="";
-      b.style.cursor="";
-    }
+    b.style.opacity=(t==="tr")?"0.35":"";
+    b.style.cursor=(t==="tr")?"not-allowed":"";
+    /* do NOT set disabled — causes tap issues on mobile */
   });
   if(t==="tr" && curPage!=="r" && curPage!=="admin"){
     curPage="r";
@@ -649,6 +643,8 @@ function setTeam(t){
 
 /* ── nav ── */
 function showPg(p){
+  /* TRY team has no lineup pages — silently stay on roster */
+  if(curTeam==="tr" && p!=="r" && p!=="admin") p="r";
   curPage=p;
   ["r","l","pp","pk","ps","admin"].forEach(function(x){
     document.getElementById("pg"+x).classList.remove("show");
