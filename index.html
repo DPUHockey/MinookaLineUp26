@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v4.5 — strip-wrap by id; strip always visible on V/JV lines -->
+<!-- MinookaLineUp26 v4.6 — lines strip-wrap identical to PP/PK; no JS hiding -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,7 +156,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.5</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.6</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -364,7 +364,7 @@ select option{background:#1a1a1a;}
     <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">LINES</span>
     <button id="btn-clear" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
   </div>
-  <div class="strip-wrap" id="strip-wrap-l">
+  <div class="strip-wrap">
     <button class="strip-btn" onclick="scrollStrip('strip-l',-80)">‹</button>
     <div id="strip-l" class="strip" data-roster="l"></div>
     <button class="strip-btn" onclick="scrollStrip('strip-l',80)">›</button>
@@ -1099,10 +1099,7 @@ function renderLines(){
   var isTR=(curTeam==="tr");
   document.getElementById("lgrid").style.display=isTR?"none":"grid";
   document.getElementById("tr-grid").style.display=isTR?"flex":"none";
-  /* Hide the player strip entirely on tryout lines — drag from within the grid */
-  var sw=document.getElementById("strip-wrap-l");
-  if(sw) sw.style.display=isTR?"none":"flex";
-  if(!isTR) renderStrip("strip-l","l");
+  renderStrip("strip-l","l");
 
   if(isTR){
     renderTRLines();
