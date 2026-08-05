@@ -624,18 +624,11 @@ function setTeam(t){
   /* update roster header */
   document.getElementById("team-lbl").textContent=TEAM_LABELS[t];
   renderR();
-  if(t==="tr" && curPage!=="r" && curPage!=="admin"){
-    curPage="r";
-    showPg("r");
-  } else {
-    renderLineupPage(curPage);
-  }
+  renderLineupPage(curPage);
 }
 
 /* ── nav ── */
 function showPg(p){
-  /* TRY team has no lineup pages — silently stay on roster */
-  if(curTeam==="tr" && p!=="r" && p!=="admin") p="r";
   curPage=p;
   ["r","l","pp","pk","ps","admin"].forEach(function(x){
     document.getElementById("pg"+x).classList.remove("show");
