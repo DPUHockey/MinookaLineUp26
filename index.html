@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v4.3 — nav fix; missed drop returns to strip; mobile meta -->
+<!-- MinookaLineUp26 v4.4 — ACT defaults to active; existing players show in strip -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,7 +156,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.3</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.4</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -966,7 +966,7 @@ function renderR(){
       '<span style="font-size:8px;font-weight:700;color:'+teamColor+';padding:1px 4px;border:1px solid '+teamColor+';border-radius:3px;flex-shrink:0;">'+teamLbl+'</span>'+
       removeBtn+
       '<label class="bact-lbl">'+
-        '<input class="babsent" type="checkbox"'+(p.active?' checked':'')+' style="accent-color:#4a4;cursor:pointer;"/>ACT'+
+        '<input class="babsent" type="checkbox"'+(p.active===false?'':' checked')+' style="accent-color:#4a4;cursor:pointer;"/>ACT'+
       '</label>'+
       '<button class="be">EDIT</button><button class="bd">DEL</button>';
     (function(pid){
@@ -1011,13 +1011,8 @@ function renderR(){
       var absChk = row.querySelector(".babsent");
       if(absChk){
         absChk.onchange=function(){
-          if(this.checked){
-            players[pid].active=true;
-            if(db) db.ref("players/"+pid+"/active").set(true);
-          } else {
-            delete players[pid].active;
-            if(db) db.ref("players/"+pid+"/active").remove();
-          }
+          players[pid].active=(this.checked!==false);
+          if(db) db.ref("players/"+pid+"/active").set(players[pid].active);
           renderR();
           renderLineupPage(curPage);
         };
@@ -1062,11 +1057,10 @@ function renderLineupPage(p){
 function usedIn(type){var s={};var lu=tl();var key=type==="sc"?"sc":type;for(var k in lu[key])s[lu[key][k]]=true;return s;}
 
 function teamPlayers(){
-  /* strip shows players matching curTeam. Practice/scrimmage pages show all */
-  /* Only players with active=true (ACT checkbox checked) appear in lineup strips */
+  /* Only players with active=true (or unset — defaults to active) appear in lineup strips */
   return Object.keys(players).filter(function(id){
-    if(!players[id].active) return false;
-    if(curPage==="ps") return true; /* scrimmage shows everyone */
+    if(players[id].active===false) return false;
+    if(curPage==="ps") return true;
     return (players[id].team||"tr")===curTeam;
   });
 }
