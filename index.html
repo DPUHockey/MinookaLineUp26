@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v4.6 — lines strip-wrap identical to PP/PK; no JS hiding -->
+<!-- MinookaLineUp26 v4.7 — mobile print fix: 300ms delay + afterprint reload -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -700,15 +700,14 @@ document.getElementById("nb-admin").onclick=function(){showPg("admin");};
 
 /* ── PRINT ── */
 function doPrint(html){
-  /* Body-swap method — works on iOS PWA and desktop */
-  var realBody = document.body.innerHTML;
-  var realTitle = document.title;
+  /* Body-swap method — 300ms delay so mobile paints before print dialog opens */
   document.body.innerHTML = html;
-  window.print();
-  document.body.innerHTML = realBody;
-  document.title = realTitle;
-  /* Re-attach event listeners lost by innerHTML swap */
-  location.reload();
+  function onAfterPrint(){
+    window.removeEventListener('afterprint', onAfterPrint);
+    location.reload();
+  }
+  window.addEventListener('afterprint', onAfterPrint);
+  setTimeout(function(){ window.print(); }, 300);
 }
 
 function printPage(page){
