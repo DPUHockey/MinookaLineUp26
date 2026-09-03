@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v4.7 — mobile print fix; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v4.8 — V/JV lines fill available height on tablet-width screens (768-1024px); tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,11 +97,12 @@ select option{background:#1a1a1a;}
 
 </style>
 <style>
-/* ── iPad (768–1024px): jerseys ~20% smaller ── */
+/* ── iPad/Android tablet (768–1024px): jerseys fill available height ── */
 @media (min-width:768px) and (max-width:1024px){
   #lgrid,#psgrid{
-    grid-template-rows:20px repeat(8,minmax(0,68px));
+    grid-template-rows:20px repeat(8,minmax(0,1fr));
     max-height:calc(100vh - 120px);
+    height:calc(100vh - 120px);
   }
   #lgrid.tryout{grid-template-rows:20px repeat(10,88px) !important;}
   .pp-unit{max-height:calc((100vh - 140px)/2);}
@@ -156,7 +157,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.6</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.8</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -174,7 +175,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v4.7</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v4.8</span>
   </div>
 </div>
 
