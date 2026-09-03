@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v5.0 — admin passcode changed; Game Day opponent/date/H-A + save-load archive; Game Day tab; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v5.1 — moved Game Day meta into top header; added game type (with write-in) and venue; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -157,7 +157,26 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.0</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.1</div></div></div>
+  </div>
+  <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
+    <input id="gd-opponent" placeholder="Opponent" style="width:68px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <input id="gd-date" type="date" style="width:96px;font-size:9px;padding:4px 3px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <select id="gd-ha" style="font-size:9px;padding:4px 2px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
+      <option value="H">HOME</option>
+      <option value="A">AWAY</option>
+    </select>
+    <select id="gd-type" style="font-size:9px;padding:4px 2px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
+      <option value="Practice">PRACTICE</option>
+      <option value="Scrimmage">SCRIMMAGE</option>
+      <option value="League">LEAGUE</option>
+      <option value="Tournament">TOURNAMENT</option>
+      <option value="Other">OTHER</option>
+    </select>
+    <input id="gd-type-other" placeholder="Type..." style="display:none;width:56px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <input id="gd-venue" placeholder="Venue" style="width:68px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <button id="btn-gd-save" style="padding:4px 8px;background:linear-gradient(135deg,#FF6B00,#c40);color:#fff;border:none;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">SAVE</button>
+    <button id="btn-gd-archive" style="padding:4px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">GAMES</button>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -176,7 +195,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.0</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.1</span>
   </div>
 </div>
 
@@ -402,17 +421,9 @@ select option{background:#1a1a1a;}
 </div>
 
 <div id="pggd" class="pg lineup-pg">
-  <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:3px 8px;">
-    <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;flex-shrink:0;">GAME DAY</span>
-    <input id="gd-opponent" placeholder="Opponent" style="flex:1;min-width:70px;font-size:9px;padding:3px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
-    <input id="gd-date" type="date" style="font-size:9px;padding:3px 4px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
-    <select id="gd-ha" style="font-size:9px;padding:3px 3px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
-      <option value="H">HOME</option>
-      <option value="A">AWAY</option>
-    </select>
-    <button id="btn-gd-save" style="padding:2px 8px;background:linear-gradient(135deg,#FF6B00,#c40);color:#fff;border:none;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">SAVE</button>
-    <button id="btn-gd-archive" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">GAMES</button>
-    <button id="btn-clear-gd" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">CLEAR</button>
+  <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:2px 8px;">
+    <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">GAME DAY</span>
+    <button id="btn-clear-gd" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
   </div>
   <div class="strip-wrap">
     <button class="strip-btn" onclick="scrollStrip('strip-gd',-80)">‹</button>
@@ -602,7 +613,7 @@ var GDF_KEYS=[["F1_LW","F1_C","F1_RW"],["F2_LW","F2_C","F2_RW"],["F3_LW","F3_C",
 var GDD_KEYS=[["D1_LD","D1_RD"],["D2_LD","D2_RD"],["D3_LD","D3_RD"]];
 var GD_G_KEYS=["G1","G2"];
 var gdGames={v:{},jv:{},tr:{}};   /* archived Game Day lineups, keyed by id */
-var gdMeta={v:{opponent:"",date:"",ha:"H"},jv:{opponent:"",date:"",ha:"H"},tr:{opponent:"",date:"",ha:"H"}};
+var gdMeta={v:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},jv:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},tr:{opponent:"",date:"",ha:"H",gameType:"League",venue:""}};
 var savedPlans={v:{},jv:{},tr:{}};
 
 var YR={"9":"FR","10":"SO","11":"JR","12":"SR"};
@@ -693,6 +704,7 @@ function showPg(p){
   document.getElementById("pg"+p).classList.add("show");
   var btn=document.getElementById("nb-"+p);
   if(btn) btn.classList.add("on");
+  document.getElementById("gd-meta-bar").style.display=(p==="gd")?"flex":"none";
   if(p==="admin") renderAdminPage();
   else renderLineupPage(p);
 }
@@ -1488,10 +1500,24 @@ function renderPP(){
 function wireGDMeta(){
   var m=gdMeta[curTeam];
   var oInp=document.getElementById("gd-opponent"),dInp=document.getElementById("gd-date"),hSel=document.getElementById("gd-ha");
-  oInp.value=m.opponent||"";dInp.value=m.date||"";hSel.value=m.ha||"H";
+  var tSel=document.getElementById("gd-type"),tOther=document.getElementById("gd-type-other"),vInp=document.getElementById("gd-venue");
+  var PRESETS=["Practice","Scrimmage","League","Tournament"];
+  oInp.value=m.opponent||"";dInp.value=m.date||"";hSel.value=m.ha||"H";vInp.value=m.venue||"";
+  if(m.gameType && PRESETS.indexOf(m.gameType)===-1){
+    tSel.value="Other";tOther.style.display="";tOther.value=m.gameType;
+  } else {
+    tSel.value=m.gameType||"League";tOther.style.display="none";tOther.value="";
+  }
   oInp.oninput=function(){m.opponent=this.value;if(db)db.ref("gdMeta/"+curTeam+"/opponent").set(this.value);};
   dInp.oninput=function(){m.date=this.value;if(db)db.ref("gdMeta/"+curTeam+"/date").set(this.value);};
   hSel.onchange=function(){m.ha=this.value;if(db)db.ref("gdMeta/"+curTeam+"/ha").set(this.value);};
+  vInp.oninput=function(){m.venue=this.value;if(db)db.ref("gdMeta/"+curTeam+"/venue").set(this.value);};
+  tSel.onchange=function(){
+    if(this.value==="Other"){tOther.style.display="";tOther.focus();m.gameType=tOther.value;}
+    else{tOther.style.display="none";m.gameType=this.value;}
+    if(db)db.ref("gdMeta/"+curTeam+"/gameType").set(m.gameType);
+  };
+  tOther.oninput=function(){m.gameType=this.value;if(db)db.ref("gdMeta/"+curTeam+"/gameType").set(this.value);};
 }
 
 function renderGD(){
@@ -1515,9 +1541,11 @@ function saveGDGame(){
   if(!opp){alert("Enter the opponent's name first");return;}
   var date=document.getElementById("gd-date").value;
   var ha=document.getElementById("gd-ha").value;
+  var gameType=gdMeta[curTeam].gameType||"League";
+  var venue=document.getElementById("gd-venue").value.trim();
   var id="g"+Date.now();
   var entry={
-    opponent:opp,date:date,ha:ha,
+    opponent:opp,date:date,ha:ha,gameType:gameType,venue:venue,
     gd:JSON.parse(JSON.stringify(tl().gd)),
     gdf:JSON.parse(JSON.stringify(unitNames[curTeam].gdf)),
     gdd:JSON.parse(JSON.stringify(unitNames[curTeam].gdd)),
@@ -1542,7 +1570,7 @@ function renderGDArchiveList(){
   ids.forEach(function(id){
     var g=games[id];
     var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:6px;background:#1a1a1a;border-radius:4px;padding:5px 8px;";
-    var sub=(g.date||"")+(g.date&&g.ha?" · ":"")+(g.ha==="A"?"AWAY":g.ha==="H"?"HOME":"");
+    var sub=[g.gameType||"",g.date||"",g.ha==="A"?"AWAY":g.ha==="H"?"HOME":"",g.venue||""].filter(Boolean).join(" · ");
     row.innerHTML='<div style="flex:1;"><div style="font-size:12px;color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;">'+esc(g.opponent)+'</div>'+(sub?'<div style="font-size:9px;color:#555;">'+esc(sub)+'</div>':'')+'</div><button style="padding:3px 9px;background:#FF6B00;color:#fff;border:none;border-radius:3px;font-size:9px;font-weight:700;">LOAD</button><button style="padding:3px 9px;background:#181818;color:#c03;border:1px solid #222;border-radius:3px;font-size:9px;font-weight:700;">DEL</button>';
     (function(gid){
       row.querySelectorAll("button")[0].onclick=function(){loadGDGame(gid);};
@@ -1558,7 +1586,7 @@ function loadGDGame(id){
   tl().gd=snap.gd||{};
   unitNames[curTeam].gdf=snap.gdf||["","","",""];
   unitNames[curTeam].gdd=snap.gdd||["","",""];
-  gdMeta[curTeam]={opponent:snap.opponent||"",date:snap.date||"",ha:snap.ha||"H"};
+  gdMeta[curTeam]={opponent:snap.opponent||"",date:snap.date||"",ha:snap.ha||"H",gameType:snap.gameType||"League",venue:snap.venue||""};
   closeGDArchive();
   showPg("gd");
   if(db){
@@ -2185,7 +2213,7 @@ function initFirebase(){
       var v=snap.val()||{};
       ["v","jv","tr"].forEach(function(tm){
         var tv=v[tm]||{};
-        gdMeta[tm]={opponent:tv.opponent||"",date:tv.date||"",ha:tv.ha||"H"};
+        gdMeta[tm]={opponent:tv.opponent||"",date:tv.date||"",ha:tv.ha||"H",gameType:tv.gameType||"League",venue:tv.venue||""};
       });
       if(curPage==="gd")wireGDMeta();
     });
