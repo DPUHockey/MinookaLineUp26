@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v4.9 — added Game Day tab (6-wide F lines, D sets/goalies dressing); tap version badge to force refresh -->
+<!-- MinookaLineUp26 v5.0 — admin passcode changed; Game Day opponent/date/H-A + save-load archive; Game Day tab; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -157,7 +157,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.9</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.0</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -176,7 +176,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v4.9</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.0</span>
   </div>
 </div>
 
@@ -402,9 +402,17 @@ select option{background:#1a1a1a;}
 </div>
 
 <div id="pggd" class="pg lineup-pg">
-  <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:2px 8px;">
-    <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">GAME DAY</span>
-    <button id="btn-clear-gd" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
+  <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:3px 8px;">
+    <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;flex-shrink:0;">GAME DAY</span>
+    <input id="gd-opponent" placeholder="Opponent" style="flex:1;min-width:70px;font-size:9px;padding:3px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <input id="gd-date" type="date" style="font-size:9px;padding:3px 4px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <select id="gd-ha" style="font-size:9px;padding:3px 3px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
+      <option value="H">HOME</option>
+      <option value="A">AWAY</option>
+    </select>
+    <button id="btn-gd-save" style="padding:2px 8px;background:linear-gradient(135deg,#FF6B00,#c40);color:#fff;border:none;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">SAVE</button>
+    <button id="btn-gd-archive" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">GAMES</button>
+    <button id="btn-clear-gd" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;">CLEAR</button>
   </div>
   <div class="strip-wrap">
     <button class="strip-btn" onclick="scrollStrip('strip-gd',-80)">‹</button>
@@ -545,6 +553,15 @@ select option{background:#1a1a1a;}
   </div>
 </div>
 
+<div id="gd-archive-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid #333;border-top:3px solid #FF6B00;border-radius:8px;padding:14px 16px;width:88%;max-width:360px;">
+    <div style="font-size:11px;font-weight:700;color:#FF6B00;letter-spacing:.1em;margin-bottom:4px;">SAVED GAME DAY LINEUPS</div>
+    <div id="gd-archive-team" style="font-size:8px;color:#555;margin-bottom:8px;">Current team: VARSITY</div>
+    <div id="gd-archive-list" style="display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto;margin-bottom:10px;"></div>
+    <button id="gd-archive-close" style="width:100%;padding:8px;background:#1a1a1a;color:#888;border:1px solid #2a2a2a;border-radius:4px;font-size:11px;font-weight:700;">CLOSE</button>
+  </div>
+</div>
+
 <script>
 /* ══════════════════════════════════════════
    PASTE YOUR FIREBASE CONFIG HERE
@@ -584,6 +601,8 @@ var unitNames={
 var GDF_KEYS=[["F1_LW","F1_C","F1_RW"],["F2_LW","F2_C","F2_RW"],["F3_LW","F3_C","F3_RW"],["F4_LW","F4_C","F4_RW"]];
 var GDD_KEYS=[["D1_LD","D1_RD"],["D2_LD","D2_RD"],["D3_LD","D3_RD"]];
 var GD_G_KEYS=["G1","G2"];
+var gdGames={v:{},jv:{},tr:{}};   /* archived Game Day lineups, keyed by id */
+var gdMeta={v:{opponent:"",date:"",ha:"H"},jv:{opponent:"",date:"",ha:"H"},tr:{opponent:"",date:"",ha:"H"}};
 var savedPlans={v:{},jv:{},tr:{}};
 
 var YR={"9":"FR","10":"SO","11":"JR","12":"SR"};
@@ -893,6 +912,10 @@ document.getElementById("fnum").onkeydown=function(e){if(e.key==="Enter")addPlay
 function confirmClear(label,fn){if(confirm("Clear "+label+"? This cannot be undone."))fn();}
 document.getElementById("btn-clear").onclick=function(){ confirmClear("LINES",function(){tl().l={};renderLines();if(db)db.ref("lineups/"+curTeam+"/l").remove();}); };
 document.getElementById("btn-clear-gd").onclick=function(){ confirmClear("GAME DAY",function(){tl().gd={};renderGD();if(db)db.ref("lineups/"+curTeam+"/gd").remove();}); };
+document.getElementById("btn-gd-save").onclick=function(){saveGDGame();};
+document.getElementById("btn-gd-archive").onclick=function(){openGDArchive();};
+document.getElementById("gd-archive-close").onclick=function(){closeGDArchive();};
+document.getElementById("gd-archive-modal").onclick=function(e){if(e.target===this)closeGDArchive();};
 document.getElementById("btn-clear-ps").onclick=function(){ confirmClear("SCRIMMAGE",function(){tl().sc={};renderSC();if(db)db.ref("lineups/"+curTeam+"/sc").remove();}); };
 document.getElementById("btn-print-ps").onclick=function(){
   printScrimmage();
@@ -1462,8 +1485,17 @@ function renderPP(){
     }
   }
 }
+function wireGDMeta(){
+  var m=gdMeta[curTeam];
+  var oInp=document.getElementById("gd-opponent"),dInp=document.getElementById("gd-date"),hSel=document.getElementById("gd-ha");
+  oInp.value=m.opponent||"";dInp.value=m.date||"";hSel.value=m.ha||"H";
+  oInp.oninput=function(){m.opponent=this.value;if(db)db.ref("gdMeta/"+curTeam+"/opponent").set(this.value);};
+  dInp.oninput=function(){m.date=this.value;if(db)db.ref("gdMeta/"+curTeam+"/date").set(this.value);};
+  hSel.onchange=function(){m.ha=this.value;if(db)db.ref("gdMeta/"+curTeam+"/ha").set(this.value);};
+}
+
 function renderGD(){
-  renderStrip("strip-gd","gd");wireUnitNames();
+  renderStrip("strip-gd","gd");wireUnitNames();wireGDMeta();
   var lu=tl().gd;
   GDF_KEYS.forEach(function(line,u){
     var c=document.getElementById("gdf-slots-"+u);c.innerHTML="";
@@ -1476,6 +1508,74 @@ function renderGD(){
   var gc=document.getElementById("gdd-slots-goalies");gc.innerHTML="";
   GD_G_KEYS.forEach(function(k){gc.appendChild(mkSlot(k,LPL[k],lu,"gd"));});
 }
+
+/* ── Game Day archive (save/load by opponent) ── */
+function saveGDGame(){
+  var opp=document.getElementById("gd-opponent").value.trim();
+  if(!opp){alert("Enter the opponent's name first");return;}
+  var date=document.getElementById("gd-date").value;
+  var ha=document.getElementById("gd-ha").value;
+  var id="g"+Date.now();
+  var entry={
+    opponent:opp,date:date,ha:ha,
+    gd:JSON.parse(JSON.stringify(tl().gd)),
+    gdf:JSON.parse(JSON.stringify(unitNames[curTeam].gdf)),
+    gdd:JSON.parse(JSON.stringify(unitNames[curTeam].gdd)),
+    saved:Date.now()
+  };
+  if(!gdGames[curTeam]) gdGames[curTeam]={};
+  gdGames[curTeam][id]=entry;
+  if(db) db.ref("gdGames/"+curTeam+"/"+id).set(entry);
+  alert("Saved lineup for "+opp);
+}
+function openGDArchive(){
+  document.getElementById("gd-archive-modal").style.display="flex";
+  document.getElementById("gd-archive-team").textContent="Current team: "+TEAM_LABELS[curTeam];
+  renderGDArchiveList();
+}
+function closeGDArchive(){document.getElementById("gd-archive-modal").style.display="none";}
+function renderGDArchiveList(){
+  var list=document.getElementById("gd-archive-list");list.innerHTML="";
+  var games=gdGames[curTeam]||{};
+  var ids=Object.keys(games).sort(function(a,b){return (games[b].saved||0)-(games[a].saved||0);});
+  if(!ids.length){list.innerHTML='<div style="font-size:10px;color:#444;padding:4px;">No saved Game Day lineups for '+TEAM_LABELS[curTeam]+' yet</div>';return;}
+  ids.forEach(function(id){
+    var g=games[id];
+    var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:6px;background:#1a1a1a;border-radius:4px;padding:5px 8px;";
+    var sub=(g.date||"")+(g.date&&g.ha?" · ":"")+(g.ha==="A"?"AWAY":g.ha==="H"?"HOME":"");
+    row.innerHTML='<div style="flex:1;"><div style="font-size:12px;color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;">'+esc(g.opponent)+'</div>'+(sub?'<div style="font-size:9px;color:#555;">'+esc(sub)+'</div>':'')+'</div><button style="padding:3px 9px;background:#FF6B00;color:#fff;border:none;border-radius:3px;font-size:9px;font-weight:700;">LOAD</button><button style="padding:3px 9px;background:#181818;color:#c03;border:1px solid #222;border-radius:3px;font-size:9px;font-weight:700;">DEL</button>';
+    (function(gid){
+      row.querySelectorAll("button")[0].onclick=function(){loadGDGame(gid);};
+      row.querySelectorAll("button")[1].onclick=function(){deleteGDGame(gid);};
+    })(id);
+    list.appendChild(row);
+  });
+}
+function loadGDGame(id){
+  var games=gdGames[curTeam]||{};
+  if(!games[id])return;
+  var snap=JSON.parse(JSON.stringify(games[id]));
+  tl().gd=snap.gd||{};
+  unitNames[curTeam].gdf=snap.gdf||["","","",""];
+  unitNames[curTeam].gdd=snap.gdd||["","",""];
+  gdMeta[curTeam]={opponent:snap.opponent||"",date:snap.date||"",ha:snap.ha||"H"};
+  closeGDArchive();
+  showPg("gd");
+  if(db){
+    db.ref("lineups/"+curTeam+"/gd").set(tl().gd);
+    db.ref("unitNames/"+curTeam+"/gdf").set(unitNames[curTeam].gdf);
+    db.ref("unitNames/"+curTeam+"/gdd").set(unitNames[curTeam].gdd);
+    db.ref("gdMeta/"+curTeam).set(gdMeta[curTeam]);
+  }
+}
+function deleteGDGame(id){
+  var g=(gdGames[curTeam]||{})[id];
+  if(!g)return;
+  if(!confirm("Delete saved lineup for '"+g.opponent+"'?"))return;
+  delete gdGames[curTeam][id];renderGDArchiveList();
+  if(db) db.ref("gdGames/"+curTeam+"/"+id).remove();
+}
+
 function setPKTab(t){
   curPKTab=t;
   document.getElementById("pktab-54").classList.toggle("on",t==="54");
@@ -1753,7 +1853,7 @@ document.getElementById("presence-name-btn").onclick = setCoachName;
 document.getElementById("presence-name-inp").onkeydown = function(e){ if(e.key==="Enter") setCoachName(); };
 
 /* ── ACCESS GATE ── */
-var ADMIN_PIN="3955";
+var ADMIN_PIN="1967";
 
 function showGate(){
   document.getElementById("login-gate").style.display="flex";
@@ -2074,6 +2174,20 @@ function initFirebase(){
       var v=snap.val()||{};
       savedPlans.v=v.v||{};savedPlans.jv=v.jv||{};savedPlans.tr=v.tr||{};
       renderSavedList();
+    });
+    db.ref("gdGames").on("value",function(snap){
+      var v=snap.val()||{};
+      gdGames.v=v.v||{};gdGames.jv=v.jv||{};gdGames.tr=v.tr||{};
+      renderGDArchiveList();
+    });
+    db.ref("gdMeta").on("value",function(snap){
+      if(loading)return;
+      var v=snap.val()||{};
+      ["v","jv","tr"].forEach(function(tm){
+        var tv=v[tm]||{};
+        gdMeta[tm]={opponent:tv.opponent||"",date:tv.date||"",ha:tv.ha||"H"};
+      });
+      if(curPage==="gd")wireGDMeta();
     });
     db.ref("unitNames").on("value",function(snap){
       var v=snap.val()||{};
