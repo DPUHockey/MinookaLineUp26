@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v5.5 — Home/Away back to full words; Game Type field sized to fit TOURNAMENT; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v5.7 — nav row now only appears on Game Day tab; single compact header row everywhere else; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +18,9 @@ body{display:flex;flex-direction:column;overflow:hidden;background:#1c1c1c;color
 button{font-family:'Oswald',sans-serif;cursor:pointer;touch-action:manipulation;}
 input,select{font-family:'Barlow Condensed',sans-serif;color:#fff;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;padding:5px 8px;font-size:14px;outline:none;width:100%;}
 select option{background:#1a1a1a;}
-#hdr{flex-shrink:0;height:48px;background:#0c0c0c;border-bottom:2px solid #FF6B00;display:flex;align-items:center;padding:0 10px;gap:6px;position:relative;z-index:100;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#hdr{flex-shrink:0;background:#0c0c0c;border-bottom:2px solid #FF6B00;display:flex;flex-direction:column;position:relative;z-index:100;}
+#hdr-row1{flex-shrink:0;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#hdr-row2{flex-shrink:0;display:none;align-items:center;height:34px;padding:0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid #1a1a1a;}
 .logo{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .logo-img{width:34px;height:34px;border-radius:4px;object-fit:contain;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:22px;}
 .lname{font-size:15px;font-weight:700;color:#FF6B00;letter-spacing:.06em;}
@@ -107,6 +109,7 @@ select option{background:#1a1a1a;}
   #lgrid.tryout{grid-template-rows:20px repeat(10,88px) !important;}
   .pp-unit{max-height:calc((100vh - 140px)/2);}
   .pk-unit{max-height:calc((100vh - 160px)/2);}
+  #pggd .pp-unit{max-height:calc((100vh - 174px)/2);}
   .pos-hdr{font-size:8px;}
   .slbl{font-size:4px;}
   .snm{font-size:6px;}
@@ -122,6 +125,7 @@ select option{background:#1a1a1a;}
   #lgrid.tryout{grid-template-rows:20px repeat(10,minmax(0,1fr)) !important;height:auto !important;}
   .pp-unit{max-height:calc((100vh - 140px)/2);}
   .pk-unit{max-height:calc((100vh - 160px)/2);}
+  #pggd .pp-unit{max-height:calc((100vh - 174px)/2);}
   .pos-hdr{font-size:8px;}
   .slbl{font-size:4px;}
   .snm{font-size:6px;}
@@ -152,12 +156,13 @@ select option{background:#1a1a1a;}
 <body>
 
 <div id="hdr">
+  <div id="hdr-row1">
   <div class="logo">
     <div class="logo-img" id="logo-wrap">
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.5</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.7</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -195,8 +200,10 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.5</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.7</span>
   </div>
+  </div>
+  <div id="hdr-row2"></div>
 </div>
 
 <!-- LOGIN GATE -->
@@ -705,6 +712,9 @@ function showPg(p){
   var btn=document.getElementById("nb-"+p);
   if(btn) btn.classList.add("on");
   document.getElementById("gd-meta-bar").style.display=(p==="gd")?"flex":"none";
+  var navEl=document.querySelector(".nav"),row1=document.getElementById("hdr-row1"),row2=document.getElementById("hdr-row2");
+  if(p==="gd"){row2.appendChild(navEl);row2.style.display="flex";}
+  else{row1.appendChild(navEl);row2.style.display="none";}
   if(p==="admin") renderAdminPage();
   else renderLineupPage(p);
 }
