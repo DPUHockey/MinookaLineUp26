@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v5.3 — shrunk Home/Away selector (H/A labels) so the header row fits better on mobile; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v5.5 — Home/Away back to full words; Game Type field sized to fit TOURNAMENT; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,13 +18,13 @@ body{display:flex;flex-direction:column;overflow:hidden;background:#1c1c1c;color
 button{font-family:'Oswald',sans-serif;cursor:pointer;touch-action:manipulation;}
 input,select{font-family:'Barlow Condensed',sans-serif;color:#fff;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;padding:5px 8px;font-size:14px;outline:none;width:100%;}
 select option{background:#1a1a1a;}
-#hdr{flex-shrink:0;height:48px;background:#0c0c0c;border-bottom:2px solid #FF6B00;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:6px;position:relative;z-index:100;}
+#hdr{flex-shrink:0;height:48px;background:#0c0c0c;border-bottom:2px solid #FF6B00;display:flex;align-items:center;padding:0 10px;gap:6px;position:relative;z-index:100;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .logo{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .logo-img{width:34px;height:34px;border-radius:4px;object-fit:contain;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:22px;}
 .lname{font-size:15px;font-weight:700;color:#FF6B00;letter-spacing:.06em;}
 .lsub{font-size:7px;color:#555;letter-spacing:.14em;font-family:'Barlow Condensed',sans-serif;}
 .lver{font-size:10px;color:#FF6B00;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.08em;}
-.nav{display:flex;gap:4px;align-items:center;overflow-x:auto;flex:1;justify-content:flex-end;}
+.nav{display:flex;gap:4px;align-items:center;flex-shrink:0;}
 .nb{padding:5px 9px;font-size:10px;font-weight:700;border-radius:4px;border:1px solid #333;background:transparent;color:#555;white-space:nowrap;flex-shrink:0;}
 .nb.on{background:#FF6B00;color:#fff;border-color:#FF6B00;}
 .tt{padding:4px 7px;font-size:9px;font-weight:700;border-radius:3px;border:1px solid #444;background:#1a1a1a;color:#666;font-family:'Oswald',sans-serif;cursor:pointer;touch-action:manipulation;white-space:nowrap;}
@@ -157,16 +157,16 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.3</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.5</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
     <input id="gd-date" type="date" style="width:96px;font-size:9px;padding:4px 3px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
-    <select id="gd-ha" title="Home / Away" style="width:38px;font-size:9px;padding:4px 1px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
-      <option value="H">H</option>
-      <option value="A">A</option>
+    <select id="gd-ha" title="Home / Away" style="width:56px;font-size:9px;padding:4px 2px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
+      <option value="H">HOME</option>
+      <option value="A">AWAY</option>
     </select>
-    <select id="gd-type" style="font-size:9px;padding:4px 2px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
+    <select id="gd-type" style="width:80px;font-size:9px;padding:4px 2px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
       <option value="Practice">PRACTICE</option>
       <option value="Scrimmage">SCRIMMAGE</option>
       <option value="League">LEAGUE</option>
@@ -195,7 +195,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.3</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.5</span>
   </div>
 </div>
 
