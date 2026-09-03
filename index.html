@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v4.8 — V/JV lines fill available height on tablet-width screens (768-1024px); tap version badge to force refresh -->
+<!-- MinookaLineUp26 v4.9 — added Game Day tab (6-wide F lines, D sets/goalies dressing); tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -157,7 +157,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.8</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v4.9</div></div></div>
   </div>
   <div class="nav">
     <div id="sdot" style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;cursor:pointer;" onclick="togglePresence()"></div>
@@ -169,13 +169,14 @@ select option{background:#1a1a1a;}
     </div>
     <button class="nb on" id="nb-r">ROSTER</button>
     <button class="nb" id="nb-l">LINES</button>
+    <button class="nb" id="nb-gd">GAME DAY</button>
     <button class="nb" id="nb-pp">PP</button>
     <button class="nb" id="nb-pk">PK</button>
     <button class="nb" id="nb-ps">SCRIM</button>
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v4.8</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v4.9</span>
   </div>
 </div>
 
@@ -400,6 +401,36 @@ select option{background:#1a1a1a;}
   </div>
 </div>
 
+<div id="pggd" class="pg lineup-pg">
+  <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:2px 8px;">
+    <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">GAME DAY</span>
+    <button id="btn-clear-gd" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
+  </div>
+  <div class="strip-wrap">
+    <button class="strip-btn" onclick="scrollStrip('strip-gd',-80)">‹</button>
+    <div id="strip-gd" class="strip" data-roster="gd"></div>
+    <button class="strip-btn" onclick="scrollStrip('strip-gd',80)">›</button>
+  </div>
+  <div id="gd-wrap" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:0 6px 2px;gap:2px;">
+    <div style="flex:1;min-height:0;display:flex;gap:2px;">
+      <div class="pp-unit"><div class="unit-hdr"><input class="unit-name" id="gdf-name-0" placeholder="LINE 1"/></div><div class="pp-slots" id="gdf-slots-0" style="grid-template-columns:repeat(3,1fr);"></div></div>
+      <div class="pp-unit"><div class="unit-hdr"><input class="unit-name" id="gdf-name-1" placeholder="LINE 2"/></div><div class="pp-slots" id="gdf-slots-1" style="grid-template-columns:repeat(3,1fr);"></div></div>
+    </div>
+    <div style="flex:1;min-height:0;display:flex;gap:2px;">
+      <div class="pp-unit"><div class="unit-hdr"><input class="unit-name" id="gdf-name-2" placeholder="LINE 3"/></div><div class="pp-slots" id="gdf-slots-2" style="grid-template-columns:repeat(3,1fr);"></div></div>
+      <div class="pp-unit"><div class="unit-hdr"><input class="unit-name" id="gdf-name-3" placeholder="LINE 4"/></div><div class="pp-slots" id="gdf-slots-3" style="grid-template-columns:repeat(3,1fr);"></div></div>
+    </div>
+    <div style="flex:1;min-height:0;display:flex;gap:2px;">
+      <div class="pp-unit"><div class="unit-hdr"><input class="unit-name" id="gdd-name-0" placeholder="D SET 1"/></div><div class="pp-slots" id="gdd-slots-0" style="grid-template-columns:repeat(2,1fr);"></div></div>
+      <div class="pp-unit"><div class="unit-hdr"><input class="unit-name" id="gdd-name-1" placeholder="D SET 2"/></div><div class="pp-slots" id="gdd-slots-1" style="grid-template-columns:repeat(2,1fr);"></div></div>
+    </div>
+    <div style="flex:1;min-height:0;display:flex;gap:2px;">
+      <div class="pp-unit"><div class="unit-hdr"><input class="unit-name" id="gdd-name-2" placeholder="D SET 3"/></div><div class="pp-slots" id="gdd-slots-2" style="grid-template-columns:repeat(2,1fr);"></div></div>
+      <div class="pp-unit"><div class="unit-hdr"><div style="font-size:9px;font-weight:700;color:#4a90d9;font-family:'Oswald',sans-serif;letter-spacing:.08em;padding:1px 3px;">GOALIES DRESSING</div></div><div class="pp-slots" id="gdd-slots-goalies" style="grid-template-columns:repeat(2,1fr);"></div></div>
+    </div>
+  </div>
+</div>
+
 <div id="pgps" class="pg lineup-pg">
   <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:2px 8px;">
     <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">SCRIMMAGE TEAMS</span>
@@ -541,15 +572,18 @@ var players={}, editId=null, DR=null, db=null, curPage="r", loading=false, curPK
 var isAdmin=false, mySessionId=null, coachCode=null;
 /* lineups and saves are keyed by team: v, jv, tr */
 var lineups={
-  v:  {l:{},pp:{},pk54:{},pk53:{},ps:{},sc:{}},
-  jv: {l:{},pp:{},pk54:{},pk53:{},ps:{},sc:{}},
-  tr: {l:{},pp:{},pk54:{},pk53:{},ps:{},sc:{}}
+  v:  {l:{},pp:{},pk54:{},pk53:{},ps:{},sc:{},gd:{}},
+  jv: {l:{},pp:{},pk54:{},pk53:{},ps:{},sc:{},gd:{}},
+  tr: {l:{},pp:{},pk54:{},pk53:{},ps:{},sc:{},gd:{}}
 };
 var unitNames={
-  v:  {pp:["","",""],pk:["","","","","",""]},
-  jv: {pp:["","",""],pk:["","","","","",""]},
-  tr: {pp:["","",""],pk:["","","","","",""]}
+  v:  {pp:["","",""],pk:["","","","","",""],gdf:["","","",""],gdd:["","",""]},
+  jv: {pp:["","",""],pk:["","","","","",""],gdf:["","","",""],gdd:["","",""]},
+  tr: {pp:["","",""],pk:["","","","","",""],gdf:["","","",""],gdd:["","",""]}
 };
+var GDF_KEYS=[["F1_LW","F1_C","F1_RW"],["F2_LW","F2_C","F2_RW"],["F3_LW","F3_C","F3_RW"],["F4_LW","F4_C","F4_RW"]];
+var GDD_KEYS=[["D1_LD","D1_RD"],["D2_LD","D2_RD"],["D3_LD","D3_RD"]];
+var GD_G_KEYS=["G1","G2"];
 var savedPlans={v:{},jv:{},tr:{}};
 
 var YR={"9":"FR","10":"SO","11":"JR","12":"SR"};
@@ -632,7 +666,7 @@ function setTeam(t){
 /* ── nav ── */
 function showPg(p){
   curPage=p;
-  ["r","l","pp","pk","ps","admin"].forEach(function(x){
+  ["r","l","gd","pp","pk","ps","admin"].forEach(function(x){
     document.getElementById("pg"+x).classList.remove("show");
     var btn=document.getElementById("nb-"+x);
     if(btn) btn.classList.remove("on");
@@ -678,6 +712,7 @@ function addPlayer(){
 /* ── wire buttons ── */
 document.getElementById("nb-r").onclick=function(){showPg("r");};
 document.getElementById("nb-l").onclick=function(){showPg("l");};
+document.getElementById("nb-gd").onclick=function(){showPg("gd");};
 document.getElementById("nb-pp").onclick=function(){showPg("pp");};
 document.getElementById("nb-pk").onclick=function(){showPg("pk");};
 document.getElementById("nb-ps").onclick=function(){showPg("ps");};
@@ -857,6 +892,7 @@ document.getElementById("fn").onkeydown=function(e){if(e.key==="Enter")document.
 document.getElementById("fnum").onkeydown=function(e){if(e.key==="Enter")addPlayer();};
 function confirmClear(label,fn){if(confirm("Clear "+label+"? This cannot be undone."))fn();}
 document.getElementById("btn-clear").onclick=function(){ confirmClear("LINES",function(){tl().l={};renderLines();if(db)db.ref("lineups/"+curTeam+"/l").remove();}); };
+document.getElementById("btn-clear-gd").onclick=function(){ confirmClear("GAME DAY",function(){tl().gd={};renderGD();if(db)db.ref("lineups/"+curTeam+"/gd").remove();}); };
 document.getElementById("btn-clear-ps").onclick=function(){ confirmClear("SCRIMMAGE",function(){tl().sc={};renderSC();if(db)db.ref("lineups/"+curTeam+"/sc").remove();}); };
 document.getElementById("btn-print-ps").onclick=function(){
   printScrimmage();
@@ -1048,6 +1084,7 @@ function renderLineupPage(p){
   else if(p==="ps")renderSC();
   else if(p==="pp")renderPP();
   else if(p==="pk")renderPK();
+  else if(p==="gd")renderGD();
 }
 
 function usedIn(type){var s={};var lu=tl();var key=type==="sc"?"sc":type;for(var k in lu[key])s[lu[key][k]]=true;return s;}
@@ -1395,8 +1432,9 @@ function buildLineGrid(gridId,slots,plabels,lineupObj,type){
 }
 
 function wireUnitNames(){
-  ["pp","pk"].forEach(function(type){
-    var count=type==="pp"?3:6;
+  var COUNTS={pp:3,pk:6,gdf:4,gdd:3};
+  ["pp","pk","gdf","gdd"].forEach(function(type){
+    var count=COUNTS[type];
     for(var i=0;i<count;i++){
       (function(t,idx){
         var inp=document.getElementById(t+"-name-"+idx);if(!inp)return;
@@ -1423,6 +1461,20 @@ function renderPP(){
       c.appendChild(wrap);
     }
   }
+}
+function renderGD(){
+  renderStrip("strip-gd","gd");wireUnitNames();
+  var lu=tl().gd;
+  GDF_KEYS.forEach(function(line,u){
+    var c=document.getElementById("gdf-slots-"+u);c.innerHTML="";
+    line.forEach(function(k){c.appendChild(mkSlot(k,LPL[k],lu,"gd"));});
+  });
+  GDD_KEYS.forEach(function(pair,u){
+    var c=document.getElementById("gdd-slots-"+u);c.innerHTML="";
+    pair.forEach(function(k){c.appendChild(mkSlot(k,LPL[k],lu,"gd"));});
+  });
+  var gc=document.getElementById("gdd-slots-goalies");gc.innerHTML="";
+  GD_G_KEYS.forEach(function(k){gc.appendChild(mkSlot(k,LPL[k],lu,"gd"));});
 }
 function setPKTab(t){
   curPKTab=t;
@@ -2014,6 +2066,7 @@ function initFirebase(){
         lineups[tm].l=tv.l||{};lineups[tm].pp=tv.pp||{};
         lineups[tm].pk54=tv.pk54||{};lineups[tm].pk53=tv.pk53||{};
         lineups[tm].ps=tv.ps||{};lineups[tm].sc=tv.sc||{};
+        lineups[tm].gd=tv.gd||{};
       });
       if(!DR)renderLineupPage(curPage);
     });
@@ -2028,6 +2081,8 @@ function initFirebase(){
         var tv=v[tm]||{};
         unitNames[tm].pp=tv.pp||["","",""];
         unitNames[tm].pk=tv.pk||["","","","","",""];
+        unitNames[tm].gdf=tv.gdf||["","","",""];
+        unitNames[tm].gdd=tv.gdd||["","",""];
       });
       wireUnitNames();
     });
