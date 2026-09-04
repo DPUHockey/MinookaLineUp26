@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v7.3 — Game Plan lineup rows: Lines 1-2, Lines 3-4, D1-2, D3+Goalies (4 rows, matching Game Day layout); dropped # prefix from jersey numbers; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v7.4 — removed duplicate opponent/date header banner on Game Plan page (the summary bar above already shows it) — frees more vertical space; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -239,7 +239,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.3</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.4</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -278,7 +278,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.3</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.4</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -1755,17 +1755,8 @@ function gpFieldRows(s,section,fields){
 function gsFlat(arr){var out=[];arr.forEach(function(a){out=out.concat(a);});return out;}
 function renderGSPlan(){
   var s=gsNormalize(gdStrategy[curTeam]);
-  var m=gdMeta[curTeam];
   var p3=document.getElementById("gs-page3");
   var html="";
-
-  html+='<div class="gp-hero"><div class="gp-hero-opp">'+(m.opponent?esc(m.opponent).toUpperCase():"OPPONENT TBD")+'</div>';
-  var subs=[];
-  if(m.date)subs.push(m.date);
-  subs.push(m.ha==="A"?"AWAY":"HOME");
-  if(m.venue)subs.push(esc(m.venue));
-  if(m.gameType)subs.push(esc(m.gameType).toUpperCase());
-  html+='<div class="gp-hero-sub">'+subs.join("  ·  ")+'</div></div>';
 
   var lu=tl().gd;
 
