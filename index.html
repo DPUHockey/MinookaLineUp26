@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v5.7 — nav row now only appears on Game Day tab; single compact header row everywhere else; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v6.0 — added Game Strategy tab (opponent roster, concepts, special teams, keys/goals/notes) bundled into Game Day save/load; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,6 +84,22 @@ select option{background:#1a1a1a;}
 .pp-unit:last-child{margin-bottom:0;}
 .unit-hdr{background:#111;padding:1px 5px;flex-shrink:0;border-bottom:1px solid #1e1e1e;}
 .pp-slots{flex:1;min-height:0;display:grid;grid-template-columns:repeat(5,1fr);gap:0;touch-action:none;}
+.gs-sec-hdr{background:linear-gradient(135deg,#FF6B00,#c40);color:#fff;font-size:10px;font-weight:700;letter-spacing:.1em;padding:5px 8px;border-radius:3px;font-family:'Oswald',sans-serif;}
+.gs-sub-hdr{color:#4a90d9;font-size:9px;font-weight:700;letter-spacing:.08em;padding:2px 2px;font-family:'Oswald',sans-serif;border-bottom:1px solid #222;margin-bottom:2px;}
+.gs-field{display:flex;flex-direction:column;gap:2px;margin-bottom:6px;}
+.gs-label{font-size:8px;color:#888;letter-spacing:.05em;font-family:'Barlow Condensed',sans-serif;}
+.gs-select{background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-size:11px;padding:5px 6px;font-family:'Barlow Condensed',sans-serif;outline:none;width:100%;}
+.gs-other{background:#181818;border:1px solid #FF6B00;border-radius:3px;color:#fff;font-size:11px;padding:5px 6px;font-family:'Barlow Condensed',sans-serif;outline:none;width:100%;margin-top:2px;}
+.gs-roster-grp{color:#FF6B00;font-size:9px;font-weight:700;letter-spacing:.1em;padding:3px 2px;font-family:'Oswald',sans-serif;}
+.gs-roster-row{display:flex;gap:4px;align-items:center;padding:2px 0;border-bottom:1px solid #1a1a1a;}
+.gs-roster-pos{width:36px;flex-shrink:0;font-size:9px;color:#4a90d9;font-weight:700;font-family:'Oswald',sans-serif;}
+.gs-roster-name{flex:1;background:#181818;border:1px solid #2a2a2a;border-radius:3px;color:#fff;font-size:11px;padding:4px 6px;font-family:'Barlow Condensed',sans-serif;outline:none;}
+.gs-roster-num{width:44px;flex-shrink:0;background:#181818;border:1px solid #2a2a2a;border-radius:3px;color:#fff;font-size:11px;padding:4px 4px;font-family:'Barlow Condensed',sans-serif;outline:none;text-align:center;}
+.gs-text-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;}
+.gs-text-lbl{width:52px;flex-shrink:0;font-size:9px;color:#888;font-family:'Barlow Condensed',sans-serif;}
+.gs-text-inp{flex:1;background:#181818;border:1px solid #2a2a2a;border-radius:3px;color:#fff;font-size:11px;padding:5px 6px;font-family:'Barlow Condensed',sans-serif;outline:none;}
+.gs-notes{width:100%;min-height:90px;background:#181818;border:1px solid #2a2a2a;border-radius:3px;color:#fff;font-size:12px;padding:6px;font-family:'Barlow Condensed',sans-serif;outline:none;resize:vertical;}
+.gs-card{background:#111;border:1px solid #222;border-radius:5px;padding:8px;}
 #pgpk{flex-direction:column;}
 #pk-grid{flex:1;min-height:0;display:flex;flex-direction:column;gap:0;overflow:hidden;touch-action:none;padding:0 5px 2px;}
 .pk-section-lbl{font-size:7px;color:#FF6B00;letter-spacing:.1em;padding:1px 3px;flex-shrink:0;}
@@ -162,7 +178,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v5.7</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.0</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -194,13 +210,14 @@ select option{background:#1a1a1a;}
     <button class="nb on" id="nb-r">ROSTER</button>
     <button class="nb" id="nb-l">LINES</button>
     <button class="nb" id="nb-gd">GAME DAY</button>
+    <button class="nb" id="nb-gs">STRATEGY</button>
     <button class="nb" id="nb-pp">PP</button>
     <button class="nb" id="nb-pk">PK</button>
     <button class="nb" id="nb-ps">SCRIM</button>
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v5.7</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.0</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -457,6 +474,15 @@ select option{background:#1a1a1a;}
   </div>
 </div>
 
+<div id="pggs" class="pg lineup-pg">
+  <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:2px 8px;">
+    <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">GAME STRATEGY</span>
+    <button id="btn-clear-gs" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
+  </div>
+  <div id="gs-summary" style="flex-shrink:0;background:#111;padding:5px 8px;font-size:11px;color:#ccc;font-family:'Barlow Condensed',sans-serif;border-bottom:1px solid #1a1a1a;font-weight:700;"></div>
+  <div id="gs-body" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 8px 24px;display:flex;flex-direction:column;gap:12px;"></div>
+</div>
+
 <div id="pgps" class="pg lineup-pg">
   <div style="flex-shrink:0;background:#0a0a0a;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:2px 8px;">
     <span style="font-size:8px;color:#FF6B00;font-weight:700;letter-spacing:.08em;">SCRIMMAGE TEAMS</span>
@@ -621,6 +647,31 @@ var GDD_KEYS=[["D1_LD","D1_RD"],["D2_LD","D2_RD"],["D3_LD","D3_RD"]];
 var GD_G_KEYS=["G1","G2"];
 var gdGames={v:{},jv:{},tr:{}};   /* archived Game Day lineups, keyed by id */
 var gdMeta={v:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},jv:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},tr:{opponent:"",date:"",ha:"H",gameType:"League",venue:""}};
+
+/* ── Game Strategy ── */
+var GS_PP_OPTS=["1-3-1","41 Czech","Overload","Umbrella"];
+var GS_CONCEPTS=[
+  {id:"ozf",  label:"Forecheck (OZF)",              opts:["2-1-2 Mirror","2-1-2 Split","1-2-2 Passive","1-2-2 Aggressive","2-3 Passive","2-3 Aggressive","2-3 Delta","1-3-1 Soft","1-4 Prevent"]},
+  {id:"nzf",  label:"Neutral Zone Forecheck (NZF)",  opts:["1-2-2","2-1-2","1-4"]},
+  {id:"dzc",  label:"D Zone Coverage (DZC)",         opts:["Zone","Man to Man","Box and 1"]},
+  {id:"nzc",  label:"Neutral Zone Regroup (NZC)",    opts:["Quick Up","D to D"]},
+  {id:"ozp",  label:"Offensive Zone Possession (OZP)",opts:["Cycle Offense","Shoot First"]}
+];
+var GS_PP=[
+  {id:"pp",     label:"Power Play (PP)",              opts:["PPBO","Standard 5","Double Winger Swing","Drop Pass","Double Stretch"]},
+  {id:"ppze",   label:"Power Play Zone Entry (PPZE)",  opts:["Carry Deep","Dump O"]},
+  {id:"pp54",   label:"Power Play 5-on-4 (PP54)",      opts:GS_PP_OPTS},
+  {id:"pp53",   label:"Power Play 5-on-3 (PP53)",      opts:GS_PP_OPTS},
+  {id:"pp43",   label:"Power Play 4-on-3 (PP43)",      opts:GS_PP_OPTS},
+  {id:"sixman", label:"Goalie Pull / 6-Man (6M)",      opts:GS_PP_OPTS.concat(["6M Shooter","6M Passer"])}
+];
+var GS_PK=[
+  {id:"pkfc",     label:"Penalty Kill Forecheck (PKFC)",              opts:["1-1-2","2-2 Soft","1-3"]},
+  {id:"pkdzc54",  label:"PK D-Zone Coverage 5-on-4 (PKDZC54)",        opts:["Large Box","Diamond","Small Box"]},
+  {id:"pkdzc5343",label:"PK D-Zone Coverage 5-on-3 / 4-on-3 (PKDZC53/43)",opts:["2-Man Up and Back","Large Triangle","Small Triangle"]}
+];
+function gsEmpty(){return {opp:{},concepts:{},pp:{},pk:{},keys:["","",""],goals:["","",""],notes:""};}
+var gdStrategy={v:gsEmpty(),jv:gsEmpty(),tr:gsEmpty()};
 var savedPlans={v:{},jv:{},tr:{}};
 
 var YR={"9":"FR","10":"SO","11":"JR","12":"SR"};
@@ -703,7 +754,7 @@ function setTeam(t){
 /* ── nav ── */
 function showPg(p){
   curPage=p;
-  ["r","l","gd","pp","pk","ps","admin"].forEach(function(x){
+  ["r","l","gd","gs","pp","pk","ps","admin"].forEach(function(x){
     document.getElementById("pg"+x).classList.remove("show");
     var btn=document.getElementById("nb-"+x);
     if(btn) btn.classList.remove("on");
@@ -754,6 +805,7 @@ function addPlayer(){
 document.getElementById("nb-r").onclick=function(){showPg("r");};
 document.getElementById("nb-l").onclick=function(){showPg("l");};
 document.getElementById("nb-gd").onclick=function(){showPg("gd");};
+document.getElementById("nb-gs").onclick=function(){showPg("gs");};
 document.getElementById("nb-pp").onclick=function(){showPg("pp");};
 document.getElementById("nb-pk").onclick=function(){showPg("pk");};
 document.getElementById("nb-ps").onclick=function(){showPg("ps");};
@@ -934,6 +986,7 @@ document.getElementById("fnum").onkeydown=function(e){if(e.key==="Enter")addPlay
 function confirmClear(label,fn){if(confirm("Clear "+label+"? This cannot be undone."))fn();}
 document.getElementById("btn-clear").onclick=function(){ confirmClear("LINES",function(){tl().l={};renderLines();if(db)db.ref("lineups/"+curTeam+"/l").remove();}); };
 document.getElementById("btn-clear-gd").onclick=function(){ confirmClear("GAME DAY",function(){tl().gd={};renderGD();if(db)db.ref("lineups/"+curTeam+"/gd").remove();}); };
+document.getElementById("btn-clear-gs").onclick=function(){ confirmClear("GAME STRATEGY",function(){gdStrategy[curTeam]=gsEmpty();renderGS();if(db)db.ref("gdStrategy/"+curTeam).remove();}); };
 document.getElementById("btn-gd-save").onclick=function(){saveGDGame();};
 document.getElementById("btn-gd-archive").onclick=function(){openGDArchive();};
 document.getElementById("gd-archive-close").onclick=function(){closeGDArchive();};
@@ -1130,6 +1183,7 @@ function renderLineupPage(p){
   else if(p==="pp")renderPP();
   else if(p==="pk")renderPK();
   else if(p==="gd")renderGD();
+  else if(p==="gs")renderGS();
 }
 
 function usedIn(type){var s={};var lu=tl();var key=type==="sc"?"sc":type;for(var k in lu[key])s[lu[key][k]]=true;return s;}
@@ -1545,7 +1599,124 @@ function renderGD(){
   GD_G_KEYS.forEach(function(k){gc.appendChild(mkSlot(k,LPL[k],lu,"gd"));});
 }
 
-/* ── Game Day archive (save/load by opponent) ── */
+/* ── Game Strategy ── */
+function gsSync(){ if(db) db.ref("gdStrategy/"+curTeam).set(gdStrategy[curTeam]); }
+function gsFieldHTML(f){
+  var opts=f.opts.map(function(o){return '<option value="'+esc(o)+'">'+esc(o).toUpperCase()+'</option>';}).join("");
+  return '<div class="gs-field">'+
+    '<div class="gs-label">'+esc(f.label).toUpperCase()+'</div>'+
+    '<select class="gs-select" data-gs-id="'+f.id+'"><option value="">— SELECT —</option>'+opts+'<option value="Other">OTHER</option></select>'+
+    '<input class="gs-other" data-gs-other="'+f.id+'" placeholder="Describe..." style="display:none;"/>'+
+  '</div>';
+}
+function gsNiceLabel(k){
+  if(k==="G1"||k==="G2")return k;
+  var parts=k.split("_");return parts[0]+" "+LPL[k];
+}
+function gsRosterRowHTML(k){
+  return '<div class="gs-roster-row"><div class="gs-roster-pos">'+gsNiceLabel(k)+'</div>'+
+    '<input class="gs-roster-name" data-gs-opp-name="'+k+'" placeholder="Player name"/>'+
+    '<input class="gs-roster-num" data-gs-opp-num="'+k+'" placeholder="#" maxlength="3"/></div>';
+}
+function renderGSSummary(){
+  var m=gdMeta[curTeam];
+  var bits=[];
+  if(m.opponent)bits.push("vs "+m.opponent);
+  if(m.date)bits.push(m.date);
+  bits.push(m.ha==="A"?"AWAY":"HOME");
+  if(m.venue)bits.push(m.venue);
+  if(m.gameType)bits.push(m.gameType);
+  document.getElementById("gs-summary").textContent=bits.length?bits.join("  ·  "):"No game info set yet — fill in Opponent/Date on the Game Day tab";
+}
+function renderGS(){
+  renderGSSummary();
+  var s=gdStrategy[curTeam];
+  var body=document.getElementById("gs-body");
+  var html="";
+
+  html+='<div class="gs-card"><div class="gs-sec-hdr">OPPOSITION ROSTER</div><div style="margin-top:6px;">';
+  html+='<div class="gs-roster-grp">FORWARDS</div>';
+  GDF_KEYS.forEach(function(line){line.forEach(function(k){html+=gsRosterRowHTML(k);});});
+  html+='<div class="gs-roster-grp" style="margin-top:6px;">DEFENSE</div>';
+  GDD_KEYS.forEach(function(pair){pair.forEach(function(k){html+=gsRosterRowHTML(k);});});
+  html+='<div class="gs-roster-grp" style="margin-top:6px;">GOALIES</div>';
+  GD_G_KEYS.forEach(function(k){html+=gsRosterRowHTML(k);});
+  html+='</div></div>';
+
+  html+='<div class="gs-card"><div class="gs-sec-hdr">TEAM CONCEPTS</div><div style="margin-top:6px;">';
+  GS_CONCEPTS.forEach(function(f){html+=gsFieldHTML(f);});
+  html+='</div></div>';
+
+  html+='<div class="gs-card"><div class="gs-sec-hdr">SPECIAL TEAMS</div>';
+  html+='<div class="gs-sub-hdr" style="margin-top:6px;">POWER PLAY</div>';
+  GS_PP.forEach(function(f){html+=gsFieldHTML(f);});
+  html+='<div class="gs-sub-hdr">PENALTY KILL</div>';
+  GS_PK.forEach(function(f){html+=gsFieldHTML(f);});
+  html+='</div>';
+
+  html+='<div class="gs-card"><div class="gs-sec-hdr">KEYS TO THE GAME</div><div style="margin-top:6px;">';
+  [0,1,2].forEach(function(i){html+='<div class="gs-text-row"><div class="gs-text-lbl">KEY '+(i+1)+'</div><input class="gs-text-inp" data-gs-key="'+i+'" placeholder="Type a key..."/></div>';});
+  html+='</div></div>';
+
+  html+='<div class="gs-card"><div class="gs-sec-hdr">GOALS</div><div style="margin-top:6px;">';
+  [0,1,2].forEach(function(i){html+='<div class="gs-text-row"><div class="gs-text-lbl">GOAL '+(i+1)+'</div><input class="gs-text-inp" data-gs-goal="'+i+'" placeholder="Type a goal..."/></div>';});
+  html+='</div></div>';
+
+  html+='<div class="gs-card"><div class="gs-sec-hdr">NOTES</div><div style="margin-top:6px;"><textarea class="gs-notes" id="gs-notes-inp" placeholder="Any other notes..."></textarea></div></div>';
+
+  body.innerHTML=html;
+
+  /* wire opposition roster */
+  body.querySelectorAll("[data-gs-opp-name]").forEach(function(el){
+    var k=el.getAttribute("data-gs-opp-name");
+    el.value=(s.opp[k]&&s.opp[k].name)||"";
+    el.oninput=function(){ s.opp[k]=s.opp[k]||{};s.opp[k].name=this.value;gsSync(); };
+  });
+  body.querySelectorAll("[data-gs-opp-num]").forEach(function(el){
+    var k=el.getAttribute("data-gs-opp-num");
+    el.value=(s.opp[k]&&s.opp[k].num)||"";
+    el.oninput=function(){ s.opp[k]=s.opp[k]||{};s.opp[k].num=this.value;gsSync(); };
+  });
+
+  /* wire dropdown fields (concepts + pp + pk share one mechanism) */
+  var ALL_FIELDS={};
+  GS_CONCEPTS.concat(GS_PP).concat(GS_PK).forEach(function(f){ALL_FIELDS[f.id]=f;});
+  body.querySelectorAll("[data-gs-id]").forEach(function(sel){
+    var id=sel.getAttribute("data-gs-id");
+    var section=(GS_CONCEPTS.indexOf(ALL_FIELDS[id])>-1)?"concepts":(GS_PP.indexOf(ALL_FIELDS[id])>-1?"pp":"pk");
+    var other=body.querySelector('[data-gs-other="'+id+'"]');
+    var saved=s[section][id]||"";
+    var PRESETS=ALL_FIELDS[id].opts;
+    if(saved && PRESETS.indexOf(saved)===-1){
+      sel.value="Other";other.style.display="";other.value=saved;
+    } else {
+      sel.value=saved;other.style.display="none";other.value="";
+    }
+    sel.onchange=function(){
+      if(this.value==="Other"){other.style.display="";other.focus();s[section][id]=other.value;}
+      else{other.style.display="none";s[section][id]=this.value;}
+      gsSync();
+    };
+    other.oninput=function(){s[section][id]=this.value;gsSync();};
+  });
+
+  /* wire keys / goals / notes */
+  body.querySelectorAll("[data-gs-key]").forEach(function(el){
+    var i=+el.getAttribute("data-gs-key");
+    el.value=s.keys[i]||"";
+    el.oninput=function(){s.keys[i]=this.value;gsSync();};
+  });
+  body.querySelectorAll("[data-gs-goal]").forEach(function(el){
+    var i=+el.getAttribute("data-gs-goal");
+    el.value=s.goals[i]||"";
+    el.oninput=function(){s.goals[i]=this.value;gsSync();};
+  });
+  var notesEl=document.getElementById("gs-notes-inp");
+  notesEl.value=s.notes||"";
+  notesEl.oninput=function(){s.notes=this.value;gsSync();};
+}
+
+
 function saveGDGame(){
   var opp=document.getElementById("gd-opponent").value.trim();
   if(!opp){alert("Enter the opponent's name first");return;}
@@ -1559,6 +1730,7 @@ function saveGDGame(){
     gd:JSON.parse(JSON.stringify(tl().gd)),
     gdf:JSON.parse(JSON.stringify(unitNames[curTeam].gdf)),
     gdd:JSON.parse(JSON.stringify(unitNames[curTeam].gdd)),
+    strategy:JSON.parse(JSON.stringify(gdStrategy[curTeam])),
     saved:Date.now()
   };
   if(!gdGames[curTeam]) gdGames[curTeam]={};
@@ -1597,6 +1769,7 @@ function loadGDGame(id){
   unitNames[curTeam].gdf=snap.gdf||["","","",""];
   unitNames[curTeam].gdd=snap.gdd||["","",""];
   gdMeta[curTeam]={opponent:snap.opponent||"",date:snap.date||"",ha:snap.ha||"H",gameType:snap.gameType||"League",venue:snap.venue||""};
+  gdStrategy[curTeam]=snap.strategy||gsEmpty();
   closeGDArchive();
   showPg("gd");
   if(db){
@@ -1604,6 +1777,7 @@ function loadGDGame(id){
     db.ref("unitNames/"+curTeam+"/gdf").set(unitNames[curTeam].gdf);
     db.ref("unitNames/"+curTeam+"/gdd").set(unitNames[curTeam].gdd);
     db.ref("gdMeta/"+curTeam).set(gdMeta[curTeam]);
+    db.ref("gdStrategy/"+curTeam).set(gdStrategy[curTeam]);
   }
 }
 function deleteGDGame(id){
@@ -2226,6 +2400,13 @@ function initFirebase(){
         gdMeta[tm]={opponent:tv.opponent||"",date:tv.date||"",ha:tv.ha||"H",gameType:tv.gameType||"League",venue:tv.venue||""};
       });
       if(curPage==="gd")wireGDMeta();
+      if(curPage==="gs")renderGSSummary();
+    });
+    db.ref("gdStrategy").on("value",function(snap){
+      if(loading)return;
+      var v=snap.val()||{};
+      ["v","jv","tr"].forEach(function(tm){ gdStrategy[tm]=v[tm]||gsEmpty(); });
+      if(curPage==="gs")renderGS();
     });
     db.ref("unitNames").on("value",function(snap){
       var v=snap.val()||{};
