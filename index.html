@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v7.9 — FIX: reverted label abbreviation — restored full descriptions; Concepts/Special Teams rows now size naturally instead of being width-capped, using available space without wrapping; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v8.1 — FIX: Keys now under Varsity Lineup column, Goals under Opposition Lineup column, Team Concepts column ends after Special Teams (blank space left blank); tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -246,7 +246,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.9</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v8.1</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -285,7 +285,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.9</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v8.1</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -1777,24 +1777,24 @@ function renderGSPlan(){
   GP_ROWS.forEach(function(row){
     html+='<div class="gp-sub-title">'+row.label+'</div><div class="gp-line-grp">'+row.keys.map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
   });
-  html+='</div></div>';
+  html+='</div>';
+  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">KEYS TO THE GAME</div>'+(keyItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
+  html+='</div>';
 
   html+='<div class="gp-pcol"><div class="gp-sec"><div class="gp-sec-title gp-opp-title">OPPOSITION LINEUP</div>';
   GP_ROWS.forEach(function(row){
     html+='<div class="gp-sub-title gp-opp-sub">'+row.label+'</div><div class="gp-line-grp">'+row.keys.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   });
   html+='<div class="gp-sub-title gp-opp-sub">POWER PLAY UNIT</div><div class="gp-line-grp">'+GS_OPP_PP_KEYS.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
-  html+='</div></div>';
+  html+='</div>';
+  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">GOALS</div>'+(goalItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
+  html+='</div>';
 
   html+='<div class="gp-pcol">';
   html+='<div class="gp-sec"><div class="gp-sec-title">TEAM CONCEPTS</div>'+(conceptRows||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
-  html+='<div class="gp-sec"><div class="gp-sec-title">SPECIAL TEAMS</div>';
+  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">SPECIAL TEAMS</div>';
   html+='<div class="gp-sub-title">POWER PLAY</div>'+(ppRows||'<div class="gp-empty">Nothing set yet</div>');
   html+='<div class="gp-sub-title">PENALTY KILL</div>'+(pkRows||'<div class="gp-empty">Nothing set yet</div>');
-  html+='</div>';
-  html+='<div class="gp-mobile-only">';
-  html+='<div class="gp-sec"><div class="gp-sec-title">KEYS TO THE GAME</div>'+(keyItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
-  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">GOALS</div>'+(goalItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
   html+='</div>';
   html+='</div>';
 
@@ -1804,11 +1804,6 @@ function renderGSPlan(){
   html+='<div class="gp-dot on" data-pg="0" onclick="gpGoToPage(0)"></div>';
   html+='<div class="gp-dot" data-pg="1" onclick="gpGoToPage(1)"></div>';
   html+='<div class="gp-dot" data-pg="2" onclick="gpGoToPage(2)"></div>';
-  html+='</div>';
-
-  html+='<div class="gp-bottom-row">';
-  html+='<div class="gp-bcol gp-sec"><div class="gp-sec-title">KEYS TO THE GAME</div>'+(keyItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
-  html+='<div class="gp-bcol gp-sec"><div class="gp-sec-title">GOALS</div>'+(goalItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
   html+='</div>';
 
   p3.innerHTML=html;
