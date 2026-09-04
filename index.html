@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v8.1 — FIX: Keys now under Varsity Lineup column, Goals under Opposition Lineup column, Team Concepts column ends after Special Teams (blank space left blank); tap version badge to force refresh -->
+<!-- MinookaLineUp26 v8.2 — FIX: main SAVE/LOAD (save icon next to print) never included Game Day lineup — loading any saved plan left Game Day untouched; now included, plus loaded plan is now labeled in the list; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -246,7 +246,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v8.1</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v8.2</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -285,7 +285,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v8.1</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v8.2</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -770,6 +770,7 @@ function gsMergeInto(dest,incoming){
 }
 var gdStrategy={v:gsEmpty(),jv:gsEmpty(),tr:gsEmpty()};
 var savedPlans={v:{},jv:{},tr:{}};
+var curLoadedPlan={v:null,jv:null,tr:null};
 
 var YR={"9":"FR","10":"SO","11":"JR","12":"SR"};
 var LSLOTS=["F1_LW","F1_C","F1_RW","F2_LW","F2_C","F2_RW","F3_LW","F3_C","F3_RW","F4_LW","F4_C","F4_RW","D1_LD","D1_RD","G1","D2_LD","D2_RD","G2","D3_LD","D3_RD","G3","D4_LD","D4_RD",null];
@@ -2210,13 +2211,14 @@ function renderSavedList(){
   var teamLabel=TEAM_LABELS[curTeam];
   if(!names.length){list.innerHTML='<div style="font-size:10px;color:#444;padding:4px;">No saved plans for '+teamLabel+' yet</div>';return;}
   names.forEach(function(name){
-    var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:6px;background:#1a1a1a;border-radius:4px;padding:5px 8px;";
+    var isLoaded=(curLoadedPlan[curTeam]===name);
+    var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:6px;background:"+(isLoaded?"#2a1c0d":"#1a1a1a")+";border-radius:4px;padding:5px 8px;"+(isLoaded?"border:1px solid #FF6B00;":"");
     var ts="";
     if(teamPlans[name].saved){
       var d=new Date(teamPlans[name].saved);
       ts=d.getMonth()+1+"/"+d.getDate()+" "+d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
     }
-    row.innerHTML='<div style="flex:1;"><div style="font-size:12px;color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;">'+esc(name)+'</div>'+(ts?'<div style="font-size:9px;color:#555;">Saved '+ts+'</div>':'')+'</div><button style="padding:3px 9px;background:#FF6B00;color:#fff;border:none;border-radius:3px;font-size:9px;font-weight:700;">LOAD</button><button style="padding:3px 9px;background:#181818;color:#c03;border:1px solid #222;border-radius:3px;font-size:9px;font-weight:700;">DEL</button>';
+    row.innerHTML='<div style="flex:1;"><div style="font-size:12px;color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;">'+esc(name)+(isLoaded?' <span style="color:#FF6B00;font-size:9px;">● CURRENTLY LOADED</span>':'')+'</div>'+(ts?'<div style="font-size:9px;color:#555;">Saved '+ts+'</div>':'')+'</div><button style="padding:3px 9px;background:#FF6B00;color:#fff;border:none;border-radius:3px;font-size:9px;font-weight:700;">LOAD</button><button style="padding:3px 9px;background:#181818;color:#c03;border:1px solid #222;border-radius:3px;font-size:9px;font-weight:700;">DEL</button>';
     (function(n){
       row.querySelectorAll("button")[0].onclick=function(){loadPlan(n);};
       row.querySelectorAll("button")[1].onclick=function(){deletePlan(n);};
@@ -2236,9 +2238,13 @@ function savePlan(){
     pk53:JSON.parse(JSON.stringify(lu.pk53)),
     ps:JSON.parse(JSON.stringify(lu.ps)),
     sc:JSON.parse(JSON.stringify(lu.sc)),
+    gd:JSON.parse(JSON.stringify(lu.gd)),
     un:JSON.parse(JSON.stringify(tu())),
+    gdf:JSON.parse(JSON.stringify(unitNames[curTeam].gdf)),
+    gdd:JSON.parse(JSON.stringify(unitNames[curTeam].gdd)),
     saved:Date.now()
   };
+  curLoadedPlan[curTeam]=name;
   renderSavedList();
   if(db) db.ref("savedPlans/"+curTeam+"/"+name).set(savedPlans[curTeam][name]);
 }
@@ -2248,13 +2254,19 @@ function loadPlan(name){
   var snap=JSON.parse(JSON.stringify(teamPlans[name]));
   var lu=tl();
   lu.l=snap.l||{};lu.pp=snap.pp||{};lu.pk54=snap.pk54||{};lu.pk53=snap.pk53||{};lu.ps=snap.ps||{};lu.sc=snap.sc||{};
+  lu.gd=snap.gd||{};
   if(snap.un){unitNames[curTeam].pp=snap.un.pp||["","",""];unitNames[curTeam].pk=snap.un.pk||["","","","","",""];}
+  unitNames[curTeam].gdf=snap.gdf||["","","",""];
+  unitNames[curTeam].gdd=snap.gdd||["","",""];
+  curLoadedPlan[curTeam]=name;
   wireUnitNames();renderLineupPage(curPage);closeSaveModal();
   if(db){loading=true;db.ref("lineups/"+curTeam).set(lu,function(){loading=false;});db.ref("unitNames/"+curTeam).set(unitNames[curTeam]);}
 }
 function deletePlan(name){
   if(!confirm("Delete '"+name+"'?"))return;
-  delete savedPlans[curTeam][name];renderSavedList();
+  delete savedPlans[curTeam][name];
+  if(curLoadedPlan[curTeam]===name)curLoadedPlan[curTeam]=null;
+  renderSavedList();
   if(db) db.ref("savedPlans/"+curTeam+"/"+name).remove();
 }
 
