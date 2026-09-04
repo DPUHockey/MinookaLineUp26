@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v6.9 — Game Plan now 3 columns on tablet/desktop (Minooka, Opposition, Strategy); player boxes much narrower (fixed-width, not stretched); each column scrolls independently so nothing gets hidden; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v7.0 — Game Plan view now updates live as you edit Team Strategies, no need to navigate away and back; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -235,7 +235,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.9</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.0</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -274,7 +274,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.9</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.0</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -1669,7 +1669,10 @@ function renderGD(){
 }
 
 /* ── Game Strategy ── */
-function gsSync(){ if(db) db.ref("gdStrategy/"+curTeam).set(gdStrategy[curTeam]); }
+function gsSync(){
+  if(db) db.ref("gdStrategy/"+curTeam).set(gdStrategy[curTeam]);
+  try{ renderGSPlan(); }catch(e){ console.error("renderGSPlan failed:",e); }
+}
 function gsFieldHTML(f){
   var opts=f.opts.map(function(o){return '<option value="'+esc(o)+'">'+esc(o).toUpperCase()+'</option>';}).join("");
   return '<div class="gs-field">'+
@@ -2589,7 +2592,7 @@ function initFirebase(){
         gdMeta[tm]={opponent:tv.opponent||"",date:tv.date||"",ha:tv.ha||"H",gameType:tv.gameType||"League",venue:tv.venue||""};
       });
       if(curPage==="gd")wireGDMeta();
-      if(curPage==="gs")renderGSSummary();
+      if(curPage==="gs"){renderGSSummary();try{renderGSPlan();}catch(e){console.error("renderGSPlan failed:",e);}}
     });
     db.ref("gdStrategy").on("value",function(snap){
       if(loading)return;
