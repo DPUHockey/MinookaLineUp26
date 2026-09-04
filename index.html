@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v7.4 — removed duplicate opponent/date header banner on Game Plan page (the summary bar above already shows it) — frees more vertical space; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v7.5 — FIX: Game Plan overflowing past the screen on large desktop monitors (flex sizing bug); Keys/Goals/Notes now share space proportionally instead of a tiny fixed cap; boxes/text ~15% bigger on tablet+desktop; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +130,7 @@ select option{background:#1a1a1a;}
 .gp-pcard.gp-opp .gp-pcard-num{color:#dd3344;}
 .gp-two-col{display:flex;flex-direction:column;gap:0;}
 .gp-two-col>.gp-col{flex:1;min-width:0;}
-.gp-plan-grid{display:flex;flex-direction:column;flex:1;min-height:0;}
+.gp-plan-grid{display:flex;flex-direction:column;flex:3;min-height:0;}
 .gp-pcol{min-width:0;}
 .gp-bottom-row{display:flex;flex-direction:column;flex-shrink:0;}
 .gp-bcol{min-width:0;}
@@ -144,22 +144,22 @@ select option{background:#1a1a1a;}
   #gs-page3{overflow:hidden !important;}
   .gp-plan-grid{flex-direction:row;gap:8px;padding:6px 8px 4px;}
   .gp-pcol{flex:1;min-width:0;overflow-y:auto;border:1px solid #1a1a1a;border-radius:5px;}
-  .gp-bottom-row{flex-direction:row;gap:8px;padding:0 8px 6px;}
-  .gp-bcol{flex:1;min-width:0;border:1px solid #1a1a1a;border-radius:5px;overflow-y:auto;max-height:120px;}
+  .gp-bottom-row{flex-direction:row;gap:8px;padding:0 8px 6px;flex:1;min-height:0;}
+  .gp-bcol{flex:1;min-width:0;min-height:0;border:1px solid #1a1a1a;border-radius:5px;overflow-y:auto;}
   .gp-hero{padding:6px 12px;}
   .gp-hero-opp{font-size:clamp(16px,1.6vw,26px);}
   .gp-hero-sub{font-size:clamp(9px,0.8vw,13px);}
   .gp-sec{padding:clamp(5px,0.6vw,10px) clamp(8px,1vw,14px);border-bottom:none;}
-  .gp-sec-title{font-size:clamp(9px,0.9vw,14px);margin-bottom:clamp(3px,0.4vw,7px);}
-  .gp-sub-title{font-size:clamp(8px,0.75vw,11px);margin:clamp(3px,0.4vw,7px) 0 clamp(2px,0.3vw,4px);}
-  .gp-line-grp{grid-template-columns:repeat(auto-fit,minmax(38px,50px));justify-content:start;gap:clamp(2px,0.3vw,5px);margin-bottom:clamp(2px,0.4vw,6px);}
+  .gp-sec-title{font-size:clamp(10px,1.04vw,16px);margin-bottom:clamp(3px,0.4vw,7px);}
+  .gp-sub-title{font-size:clamp(9px,0.86vw,13px);margin:clamp(3px,0.4vw,7px) 0 clamp(2px,0.3vw,4px);}
+  .gp-line-grp{grid-template-columns:repeat(auto-fit,minmax(44px,58px));justify-content:start;gap:clamp(2px,0.3vw,5px);margin-bottom:clamp(2px,0.4vw,6px);}
   .gp-pcard{padding:clamp(2px,0.3vw,5px) clamp(1px,0.2vw,3px);}
-  .gp-pcard-pos{font-size:clamp(6px,0.5vw,8px);}
-  .gp-pcard-num{font-size:clamp(11px,1.1vw,18px);line-height:1.1;}
-  .gp-pcard-name{font-size:clamp(6px,0.55vw,9px);}
-  .gp-field-row{padding:clamp(1px,0.2vw,3px) 0;font-size:clamp(9px,0.85vw,13px);}
-  .gp-text-item{padding:clamp(3px,0.4vw,6px) clamp(5px,0.6vw,9px);margin-bottom:clamp(2px,0.3vw,5px);font-size:clamp(9px,0.85vw,13px);}
-  .gp-notes{font-size:clamp(9px,0.85vw,13px);line-height:1.3;}
+  .gp-pcard-pos{font-size:clamp(7px,0.58vw,9px);}
+  .gp-pcard-num{font-size:clamp(13px,1.27vw,21px);line-height:1.1;}
+  .gp-pcard-name{font-size:clamp(7px,0.63vw,10px);}
+  .gp-field-row{padding:clamp(1px,0.2vw,3px) 0;font-size:clamp(10px,0.98vw,15px);}
+  .gp-text-item{padding:clamp(3px,0.4vw,6px) clamp(5px,0.6vw,9px);margin-bottom:clamp(2px,0.3vw,5px);font-size:clamp(10px,0.98vw,15px);}
+  .gp-notes{font-size:clamp(10px,0.98vw,15px);line-height:1.3;}
 }
 #pgpk{flex-direction:column;}
 #pk-grid{flex:1;min-height:0;display:flex;flex-direction:column;gap:0;overflow:hidden;touch-action:none;padding:0 5px 2px;}
@@ -239,7 +239,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.4</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.5</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -278,7 +278,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.4</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.5</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -544,7 +544,7 @@ select option{background:#1a1a1a;}
   <div id="gs-pager" style="flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;">
     <div id="gs-page1" style="flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 8px 16px;display:flex;flex-direction:column;gap:8px;"></div>
     <div id="gs-page2" style="flex:0 0 100%;scroll-snap-align:start;overflow:hidden;padding:6px 6px 4px;display:flex;flex-direction:column;gap:3px;"></div>
-    <div id="gs-page3" style="flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;display:flex;flex-direction:column;"></div>
+    <div id="gs-page3" style="flex:0 0 100%;min-height:0;scroll-snap-align:start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;display:flex;flex-direction:column;"></div>
   </div>
   <div id="gs-dots" style="flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:8px;padding:3px;background:#0a0a0a;border-top:1px solid #1a1a1a;">
     <div class="gs-dot on" data-pg="0" onclick="gsGoToPage(0)"></div>
