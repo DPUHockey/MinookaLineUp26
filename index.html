@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v6.6 — Game Plan view: Minooka sections black/orange/white, opponent sections red/white/blue, lineups now side-by-side; no-scroll layout on tablet/desktop (768px+), scrolls on phone; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v6.7 — FIX: grid cards were leaving empty reserved space instead of expanding (auto-fill→auto-fit); opposition lineup now broken out by LINE/D SET to match Minooka's format; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,7 +117,7 @@ select option{background:#1a1a1a;}
 .gp-sec-title.gp-opp-title{color:#dd3344;}
 .gp-sub-title{font-size:9px;color:#FF6B00;font-weight:700;letter-spacing:.1em;font-family:'Oswald',sans-serif;margin:6px 0 3px;}
 .gp-sub-title.gp-opp-sub{color:#4d6fdd;}
-.gp-line-grp{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px;margin-bottom:5px;}
+.gp-line-grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:4px;margin-bottom:5px;}
 .gp-pcard{background:#0d0d0d;border:1px solid #262626;border-radius:5px;padding:4px 3px;text-align:center;}
 .gp-pcard-pos{font-size:7px;font-weight:700;font-family:'Oswald',sans-serif;letter-spacing:.05em;}
 .gp-pcard-num{font-size:15px;font-weight:700;font-family:'Oswald',sans-serif;line-height:1.15;}
@@ -146,7 +146,7 @@ select option{background:#1a1a1a;}
   .gp-sec{padding:5px 8px;border-bottom:none;}
   .gp-sec-title{font-size:9px;margin-bottom:3px;}
   .gp-sub-title{font-size:7px;margin:3px 0 2px;}
-  .gp-line-grp{grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:2px;margin-bottom:2px;}
+  .gp-line-grp{grid-template-columns:repeat(auto-fit,minmax(46px,1fr));gap:2px;margin-bottom:2px;}
   .gp-pcard{padding:2px 1px;}
   .gp-pcard-pos{font-size:6px;}
   .gp-pcard-num{font-size:11px;line-height:1.05;}
@@ -233,7 +233,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.6</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.7</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -272,7 +272,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.6</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.7</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -1757,8 +1757,12 @@ function renderGSPlan(){
   html+='</div></div>';
 
   html+='<div class="gp-col"><div class="gp-sec"><div class="gp-sec-title gp-opp-title">OPPOSITION LINEUP</div>';
-  html+='<div class="gp-sub-title gp-opp-sub">FORWARDS</div><div class="gp-line-grp">'+gsFlat(GDF_KEYS).map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
-  html+='<div class="gp-sub-title gp-opp-sub">DEFENSE</div><div class="gp-line-grp">'+gsFlat(GDD_KEYS).map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
+  GDF_KEYS.forEach(function(line,i){
+    html+='<div class="gp-sub-title gp-opp-sub">LINE '+(i+1)+'</div><div class="gp-line-grp">'+line.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
+  });
+  GDD_KEYS.forEach(function(pair,i){
+    html+='<div class="gp-sub-title gp-opp-sub">D SET '+(i+1)+'</div><div class="gp-line-grp">'+pair.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
+  });
   html+='<div class="gp-sub-title gp-opp-sub">GOALIES</div><div class="gp-line-grp">'+GD_G_KEYS.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   html+='<div class="gp-sub-title gp-opp-sub">POWER PLAY UNIT</div><div class="gp-line-grp">'+GS_OPP_PP_KEYS.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   html+='</div></div>';
