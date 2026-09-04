@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v7.1 — FIX: Strategy edits silently dropping and not syncing across devices — Firebase sync was replacing the data object instead of updating it in place, breaking the link between your typing and what got saved; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v7.2 — Game Plan: all 4 forward lines now on one row per team (frees vertical space); Keys/Goals/Notes moved to a full-width strip across the bottom; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,6 +132,8 @@ select option{background:#1a1a1a;}
 .gp-two-col>.gp-col{flex:1;min-width:0;}
 .gp-plan-grid{display:flex;flex-direction:column;flex:1;min-height:0;}
 .gp-pcol{min-width:0;}
+.gp-bottom-row{display:flex;flex-direction:column;flex-shrink:0;}
+.gp-bcol{min-width:0;}
 .gp-field-row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid #181818;font-size:11px;}
 .gp-field-lbl{color:#777;font-family:'Barlow Condensed',sans-serif;flex-shrink:0;}
 .gp-field-val{color:#fff;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-align:right;}
@@ -140,8 +142,10 @@ select option{background:#1a1a1a;}
 .gp-empty{font-size:9px;color:#444;font-style:italic;}
 @media (min-width:768px){
   #gs-page3{overflow:hidden !important;}
-  .gp-plan-grid{flex-direction:row;gap:8px;padding:6px 8px;}
+  .gp-plan-grid{flex-direction:row;gap:8px;padding:6px 8px 4px;}
   .gp-pcol{flex:1;min-width:0;overflow-y:auto;border:1px solid #1a1a1a;border-radius:5px;}
+  .gp-bottom-row{flex-direction:row;gap:8px;padding:0 8px 6px;}
+  .gp-bcol{flex:1;min-width:0;border:1px solid #1a1a1a;border-radius:5px;overflow-y:auto;max-height:120px;}
   .gp-hero{padding:6px 12px;}
   .gp-hero-opp{font-size:clamp(16px,1.6vw,26px);}
   .gp-hero-sub{font-size:clamp(9px,0.8vw,13px);}
@@ -235,7 +239,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.1</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.2</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -274,7 +278,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.1</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.2</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -1758,15 +1762,12 @@ function renderGSPlan(){
   html+='<div class="gp-hero-sub">'+subs.join("  ·  ")+'</div></div>';
 
   var lu=tl().gd;
-  var gdfNames=unitNames[curTeam].gdf||["","","",""];
   var gddNames=unitNames[curTeam].gdd||["","",""];
 
   html+='<div class="gp-plan-grid">';
 
   html+='<div class="gp-pcol"><div class="gp-sec"><div class="gp-sec-title">'+esc(TEAM_LABELS[curTeam])+' LINEUP</div>';
-  GDF_KEYS.forEach(function(line,i){
-    html+='<div class="gp-sub-title">'+(gdfNames[i]?esc(gdfNames[i]).toUpperCase():"LINE "+(i+1))+'</div><div class="gp-line-grp">'+line.map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
-  });
+  html+='<div class="gp-sub-title">FORWARDS</div><div class="gp-line-grp">'+gsFlat(GDF_KEYS).map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
   GDD_KEYS.forEach(function(pair,i){
     html+='<div class="gp-sub-title">'+(gddNames[i]?esc(gddNames[i]).toUpperCase():"D SET "+(i+1))+'</div><div class="gp-line-grp">'+pair.map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
   });
@@ -1774,9 +1775,7 @@ function renderGSPlan(){
   html+='</div></div>';
 
   html+='<div class="gp-pcol"><div class="gp-sec"><div class="gp-sec-title gp-opp-title">OPPOSITION LINEUP</div>';
-  GDF_KEYS.forEach(function(line,i){
-    html+='<div class="gp-sub-title gp-opp-sub">LINE '+(i+1)+'</div><div class="gp-line-grp">'+line.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
-  });
+  html+='<div class="gp-sub-title gp-opp-sub">FORWARDS</div><div class="gp-line-grp">'+gsFlat(GDF_KEYS).map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   GDD_KEYS.forEach(function(pair,i){
     html+='<div class="gp-sub-title gp-opp-sub">D SET '+(i+1)+'</div><div class="gp-line-grp">'+pair.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   });
@@ -1787,20 +1786,23 @@ function renderGSPlan(){
   var conceptRows=gpFieldRows(s,"concepts",GS_CONCEPTS);
   var ppRows=gpFieldRows(s,"pp",GS_PP);
   var pkRows=gpFieldRows(s,"pk",GS_PK);
-  var keyItems=(s.keys||[]).filter(Boolean).map(function(k){return '<div class="gp-text-item">'+esc(k)+'</div>';}).join("");
-  var goalItems=(s.goals||[]).filter(Boolean).map(function(g){return '<div class="gp-text-item">'+esc(g)+'</div>';}).join("");
 
   html+='<div class="gp-pcol">';
-  html+='<div class="gp-sec"><div class="gp-sec-title">KEYS TO THE GAME</div>'+(keyItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
-  html+='<div class="gp-sec"><div class="gp-sec-title">GOALS</div>'+(goalItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
   html+='<div class="gp-sec"><div class="gp-sec-title">TEAM CONCEPTS</div>'+(conceptRows||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
-  html+='<div class="gp-sec"><div class="gp-sec-title">SPECIAL TEAMS</div>';
+  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">SPECIAL TEAMS</div>';
   html+='<div class="gp-sub-title">POWER PLAY</div>'+(ppRows||'<div class="gp-empty">Nothing set yet</div>');
   html+='<div class="gp-sub-title">PENALTY KILL</div>'+(pkRows||'<div class="gp-empty">Nothing set yet</div>');
   html+='</div>';
-  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">NOTES</div>'+(s.notes?'<div class="gp-notes">'+esc(s.notes)+'</div>':'<div class="gp-empty">No notes</div>')+'</div>';
   html+='</div>';
 
+  html+='</div>';
+
+  var keyItems=(s.keys||[]).filter(Boolean).map(function(k){return '<div class="gp-text-item">'+esc(k)+'</div>';}).join("");
+  var goalItems=(s.goals||[]).filter(Boolean).map(function(g){return '<div class="gp-text-item">'+esc(g)+'</div>';}).join("");
+  html+='<div class="gp-bottom-row">';
+  html+='<div class="gp-bcol gp-sec"><div class="gp-sec-title">KEYS TO THE GAME</div>'+(keyItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
+  html+='<div class="gp-bcol gp-sec"><div class="gp-sec-title">GOALS</div>'+(goalItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
+  html+='<div class="gp-bcol gp-sec"><div class="gp-sec-title">NOTES</div>'+(s.notes?'<div class="gp-notes">'+esc(s.notes)+'</div>':'<div class="gp-empty">No notes</div>')+'</div>';
   html+='</div>';
 
   p3.innerHTML=html;
