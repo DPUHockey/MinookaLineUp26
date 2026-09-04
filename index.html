@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v7.0 — Game Plan view now updates live as you edit Team Strategies, no need to navigate away and back; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v7.1 — FIX: Strategy edits silently dropping and not syncing across devices — Firebase sync was replacing the data object instead of updating it in place, breaking the link between your typing and what got saved; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -235,7 +235,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.0</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.1</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -274,7 +274,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.0</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.1</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -740,6 +740,17 @@ var GS_PK=[
   {id:"pkdzc5343",label:"PK D-Zone Coverage 5-on-3 / 4-on-3 (PKDZC53/43)",opts:["2-Man Up and Back","Large Triangle","Small Triangle"]}
 ];
 function gsEmpty(){return {opp:{},concepts:{},pp:{},pk:{},keys:["","",""],goals:["","",""],notes:""};}
+function gsMergeInto(dest,incoming){
+  incoming=incoming||{};
+  dest.opp=incoming.opp||{};
+  dest.concepts=incoming.concepts||{};
+  dest.pp=incoming.pp||{};
+  dest.pk=incoming.pk||{};
+  dest.keys=(incoming.keys&&incoming.keys.length)?incoming.keys:["","",""];
+  dest.goals=(incoming.goals&&incoming.goals.length)?incoming.goals:["","",""];
+  dest.notes=(typeof incoming.notes==="string")?incoming.notes:"";
+  return dest;
+}
 var gdStrategy={v:gsEmpty(),jv:gsEmpty(),tr:gsEmpty()};
 var savedPlans={v:{},jv:{},tr:{}};
 
@@ -2597,7 +2608,7 @@ function initFirebase(){
     db.ref("gdStrategy").on("value",function(snap){
       if(loading)return;
       var v=snap.val()||{};
-      ["v","jv","tr"].forEach(function(tm){ gdStrategy[tm]=v[tm]||gsEmpty(); });
+      ["v","jv","tr"].forEach(function(tm){ gsMergeInto(gdStrategy[tm],v[tm]); });
       if(curPage==="gs"){
         var active=document.activeElement;
         var p1=document.getElementById("gs-page1"),p2=document.getElementById("gs-page2");
