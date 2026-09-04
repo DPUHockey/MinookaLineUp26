@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v7.5 — FIX: Game Plan overflowing past the screen on large desktop monitors (flex sizing bug); Keys/Goals/Notes now share space proportionally instead of a tiny fixed cap; boxes/text ~15% bigger on tablet+desktop; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v7.7 — shrunk Team Concepts/Special Teams label-value gap; Game Plan on mobile now swipes between 3 sub-pages (Minooka, Opposition, Strategy+Keys+Goals+Notes) instead of one long scroll; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,6 +107,7 @@ select option{background:#1a1a1a;}
 .gs-oline{flex:1;min-height:0;display:flex;gap:3px;}
 .gs-obox{flex:1;min-height:0;display:flex;flex-direction:column;border:1px solid #2a2a2a;border-radius:4px;overflow:hidden;background:#111;}
 .gs-obox-lbl{flex-shrink:0;background:#1c1c1c;color:#4a90d9;font-size:8px;font-weight:700;text-align:center;padding:1px 0;font-family:'Oswald',sans-serif;letter-spacing:.05em;}
+.gs-obox-lbl:empty{display:none;}
 .gs-obox-name{flex-shrink:0;width:100%;background:transparent;border:none;border-bottom:1px solid #222;color:#fff;font-size:9px;text-align:center;padding:2px 1px;outline:none;font-family:'Barlow Condensed',sans-serif;}
 .gs-obox-num{flex:1;min-height:0;width:100%;background:transparent;border:none;color:#FF6B00;font-weight:700;text-align:center;padding:0;outline:none;font-family:'Oswald',sans-serif;font-size:clamp(18px,7vw,34px);}
 .gp-hero{flex-shrink:0;background:#000;padding:10px 14px;border-bottom:2px solid #FF6B00;}
@@ -120,6 +121,7 @@ select option{background:#1a1a1a;}
 .gp-line-grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:4px;margin-bottom:5px;}
 .gp-pcard{background:#0d0d0d;border:1px solid #262626;border-radius:5px;padding:4px 3px;text-align:center;}
 .gp-pcard-pos{font-size:7px;font-weight:700;font-family:'Oswald',sans-serif;letter-spacing:.05em;}
+.gp-pcard-pos:empty{display:none;}
 .gp-pcard-num{font-size:15px;font-weight:700;font-family:'Oswald',sans-serif;line-height:1.15;}
 .gp-pcard-name{font-size:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;line-height:1.1;word-break:break-word;}
 .gp-pcard.gp-mn{border-color:#FF6B00;}
@@ -130,11 +132,14 @@ select option{background:#1a1a1a;}
 .gp-pcard.gp-opp .gp-pcard-num{color:#dd3344;}
 .gp-two-col{display:flex;flex-direction:column;gap:0;}
 .gp-two-col>.gp-col{flex:1;min-width:0;}
-.gp-plan-grid{display:flex;flex-direction:column;flex:3;min-height:0;}
-.gp-pcol{min-width:0;}
-.gp-bottom-row{display:flex;flex-direction:column;flex-shrink:0;}
-.gp-bcol{min-width:0;}
-.gp-field-row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid #181818;font-size:11px;}
+.gp-plan-grid{display:flex;flex-direction:row;flex:1;min-height:0;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
+.gp-pcol{flex:0 0 100%;scroll-snap-align:start;min-width:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.gp-bottom-row{display:none;}
+.gp-mobile-only{display:block;}
+.gp-dots{flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:8px;padding:4px;background:#0a0a0a;border-top:1px solid #1a1a1a;}
+.gp-dot{width:7px;height:7px;border-radius:50%;background:#333;cursor:pointer;}
+.gp-dot.on{background:#FF6B00;}
+.gp-field-row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid #181818;font-size:11px;max-width:min(100%,270px);}
 .gp-field-lbl{color:#777;font-family:'Barlow Condensed',sans-serif;flex-shrink:0;}
 .gp-field-val{color:#fff;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-align:right;}
 .gp-text-item{background:#0d0d0d;border-left:3px solid #FF6B00;border-radius:3px;padding:5px 7px;margin-bottom:4px;font-size:11px;color:#eee;font-family:'Barlow Condensed',sans-serif;}
@@ -142,10 +147,12 @@ select option{background:#1a1a1a;}
 .gp-empty{font-size:9px;color:#444;font-style:italic;}
 @media (min-width:768px){
   #gs-page3{overflow:hidden !important;}
-  .gp-plan-grid{flex-direction:row;gap:8px;padding:6px 8px 4px;}
-  .gp-pcol{flex:1;min-width:0;overflow-y:auto;border:1px solid #1a1a1a;border-radius:5px;}
-  .gp-bottom-row{flex-direction:row;gap:8px;padding:0 8px 6px;flex:1;min-height:0;}
+  .gp-plan-grid{flex-direction:row;gap:8px;padding:6px 8px 4px;flex:3;overflow-x:visible;scroll-snap-type:none;}
+  .gp-pcol{flex:1;min-width:0;scroll-snap-align:none;overflow-y:auto;border:1px solid #1a1a1a;border-radius:5px;}
+  .gp-bottom-row{display:flex;flex-direction:row;gap:8px;padding:0 8px 6px;flex:1;min-height:0;}
   .gp-bcol{flex:1;min-width:0;min-height:0;border:1px solid #1a1a1a;border-radius:5px;overflow-y:auto;}
+  .gp-mobile-only{display:none;}
+  .gp-dots{display:none;}
   .gp-hero{padding:6px 12px;}
   .gp-hero-opp{font-size:clamp(16px,1.6vw,26px);}
   .gp-hero-sub{font-size:clamp(9px,0.8vw,13px);}
@@ -239,7 +246,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.5</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.7</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -278,7 +285,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.5</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.7</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -818,7 +825,7 @@ var SC_PL={
   SC_W_F4_LW:"LW",SC_W_F4_C:"C",SC_W_F4_RW:"RW",SC_W_D4_LD:"LD",SC_W_D4_RD:"RD",
   SC_W_G1:"G",SC_W_G2:"G",SC_W_G3:"G"
 };
-var PP_POS=["MONSTER","SNIPER","QB","L SHOOTER","R SHOOTER"];
+var PP_POS=["MONSTER","SNIPER","CHIEF","L SHOOTER","R SHOOTER"];
 var PK4_POS=["LW","RW","LD","RD"];
 var PK3_POS=["LW","C","RW"];
 
@@ -1704,8 +1711,7 @@ function gsFieldHTML(f){
 }
 function gsNiceLabel(k){
   if(k==="G1"||k==="G2")return k;
-  var ppIdx=GS_OPP_PP_KEYS.indexOf(k);
-  if(ppIdx>-1)return PP_POS[ppIdx];
+  if(GS_OPP_PP_KEYS.indexOf(k)>-1)return ""; /* Opposition PP unit: no position names */
   var parts=k.split("_");return parts[0]+" "+LPL[k];
 }
 function gsOboxHTML(k){
@@ -1759,8 +1765,13 @@ function renderGSPlan(){
   var html="";
 
   var lu=tl().gd;
+  var conceptRows=gpFieldRows(s,"concepts",GS_CONCEPTS);
+  var ppRows=gpFieldRows(s,"pp",GS_PP);
+  var pkRows=gpFieldRows(s,"pk",GS_PK);
+  var keyItems=(s.keys||[]).filter(Boolean).map(function(k){return '<div class="gp-text-item">'+esc(k)+'</div>';}).join("");
+  var goalItems=(s.goals||[]).filter(Boolean).map(function(g){return '<div class="gp-text-item">'+esc(g)+'</div>';}).join("");
 
-  html+='<div class="gp-plan-grid">';
+  html+='<div class="gp-plan-grid" id="gp-plan-grid">';
 
   html+='<div class="gp-pcol"><div class="gp-sec"><div class="gp-sec-title">'+esc(TEAM_LABELS[curTeam])+' LINEUP</div>';
   GP_ROWS.forEach(function(row){
@@ -1775,22 +1786,27 @@ function renderGSPlan(){
   html+='<div class="gp-sub-title gp-opp-sub">POWER PLAY UNIT</div><div class="gp-line-grp">'+GS_OPP_PP_KEYS.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   html+='</div></div>';
 
-  var conceptRows=gpFieldRows(s,"concepts",GS_CONCEPTS);
-  var ppRows=gpFieldRows(s,"pp",GS_PP);
-  var pkRows=gpFieldRows(s,"pk",GS_PK);
-
   html+='<div class="gp-pcol">';
   html+='<div class="gp-sec"><div class="gp-sec-title">TEAM CONCEPTS</div>'+(conceptRows||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
-  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">SPECIAL TEAMS</div>';
+  html+='<div class="gp-sec"><div class="gp-sec-title">SPECIAL TEAMS</div>';
   html+='<div class="gp-sub-title">POWER PLAY</div>'+(ppRows||'<div class="gp-empty">Nothing set yet</div>');
   html+='<div class="gp-sub-title">PENALTY KILL</div>'+(pkRows||'<div class="gp-empty">Nothing set yet</div>');
   html+='</div>';
+  html+='<div class="gp-mobile-only">';
+  html+='<div class="gp-sec"><div class="gp-sec-title">KEYS TO THE GAME</div>'+(keyItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
+  html+='<div class="gp-sec"><div class="gp-sec-title">GOALS</div>'+(goalItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
+  html+='<div class="gp-sec" style="border-bottom:none;"><div class="gp-sec-title">NOTES</div>'+(s.notes?'<div class="gp-notes">'+esc(s.notes)+'</div>':'<div class="gp-empty">No notes</div>')+'</div>';
+  html+='</div>';
   html+='</div>';
 
   html+='</div>';
 
-  var keyItems=(s.keys||[]).filter(Boolean).map(function(k){return '<div class="gp-text-item">'+esc(k)+'</div>';}).join("");
-  var goalItems=(s.goals||[]).filter(Boolean).map(function(g){return '<div class="gp-text-item">'+esc(g)+'</div>';}).join("");
+  html+='<div class="gp-dots">';
+  html+='<div class="gp-dot on" data-pg="0" onclick="gpGoToPage(0)"></div>';
+  html+='<div class="gp-dot" data-pg="1" onclick="gpGoToPage(1)"></div>';
+  html+='<div class="gp-dot" data-pg="2" onclick="gpGoToPage(2)"></div>';
+  html+='</div>';
+
   html+='<div class="gp-bottom-row">';
   html+='<div class="gp-bcol gp-sec"><div class="gp-sec-title">KEYS TO THE GAME</div>'+(keyItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
   html+='<div class="gp-bcol gp-sec"><div class="gp-sec-title">GOALS</div>'+(goalItems||'<div class="gp-empty">Nothing set yet</div>')+'</div>';
@@ -1798,6 +1814,16 @@ function renderGSPlan(){
   html+='</div>';
 
   p3.innerHTML=html;
+
+  var grid=document.getElementById("gp-plan-grid");
+  grid.onscroll=function(){
+    var i=Math.round(grid.scrollLeft/grid.clientWidth);
+    p3.querySelectorAll(".gp-dot").forEach(function(d,idx){d.classList.toggle("on",idx===i);});
+  };
+}
+function gpGoToPage(i){
+  var grid=document.getElementById("gp-plan-grid");
+  if(grid) grid.scrollTo({left:i*grid.clientWidth,behavior:"smooth"});
 }
 function gsNormalize(s){
   if(!s.opp)s.opp={};
