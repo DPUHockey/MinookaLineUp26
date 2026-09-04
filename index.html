@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v7.2 — Game Plan: all 4 forward lines now on one row per team (frees vertical space); Keys/Goals/Notes moved to a full-width strip across the bottom; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v7.3 — Game Plan lineup rows: Lines 1-2, Lines 3-4, D1-2, D3+Goalies (4 rows, matching Game Day layout); dropped # prefix from jersey numbers; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -239,7 +239,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.2</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v7.3</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -278,7 +278,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.2</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v7.3</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -718,6 +718,12 @@ var GDF_KEYS=[["F1_LW","F1_C","F1_RW"],["F2_LW","F2_C","F2_RW"],["F3_LW","F3_C",
 var GDD_KEYS=[["D1_LD","D1_RD"],["D2_LD","D2_RD"],["D3_LD","D3_RD"]];
 var GD_G_KEYS=["G1","G2"];
 var GS_OPP_PP_KEYS=["OPP_PP1","OPP_PP2","OPP_PP3","OPP_PP4","OPP_PP5"];
+var GP_ROWS=[
+  {label:"LINES 1-2",keys:GDF_KEYS[0].concat(GDF_KEYS[1])},
+  {label:"LINES 3-4",keys:GDF_KEYS[2].concat(GDF_KEYS[3])},
+  {label:"D 1-2",keys:GDD_KEYS[0].concat(GDD_KEYS[1])},
+  {label:"D3 / GOALIES",keys:GDD_KEYS[2].concat(GD_G_KEYS)}
+];
 var gdGames={v:{},jv:{},tr:{}};   /* archived Game Day lineups, keyed by id */
 var gdMeta={v:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},jv:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},tr:{opponent:"",date:"",ha:"H",gameType:"League",venue:""}};
 
@@ -1726,7 +1732,7 @@ function gpCardHTML(s,k){
   var name=o.name||"", num=o.num||"";
   var faded=(!name&&!num)?"opacity:.35;":"";
   return '<div class="gp-pcard gp-opp" style="'+faded+'"><div class="gp-pcard-pos">'+gsNiceLabel(k)+'</div>'+
-    '<div class="gp-pcard-num">'+(num?"#"+esc(num):"—")+'</div>'+
+    '<div class="gp-pcard-num">'+(num?esc(num):"—")+'</div>'+
     '<div class="gp-pcard-name">'+(name?esc(name):"")+'</div></div>';
 }
 function gpOurCardHTML(lu,k){
@@ -1734,7 +1740,7 @@ function gpOurCardHTML(lu,k){
   var p=id?players[id]:null;
   var faded=p?"":"opacity:.35;";
   return '<div class="gp-pcard gp-mn" style="'+faded+'"><div class="gp-pcard-pos">'+gsNiceLabel(k)+'</div>'+
-    '<div class="gp-pcard-num">'+(p?"#"+esc(p.number):"—")+'</div>'+
+    '<div class="gp-pcard-num">'+(p?esc(p.number):"—")+'</div>'+
     '<div class="gp-pcard-name">'+(p?esc(p.name):"")+'</div></div>';
 }
 function gpFieldRows(s,section,fields){
@@ -1762,24 +1768,19 @@ function renderGSPlan(){
   html+='<div class="gp-hero-sub">'+subs.join("  ·  ")+'</div></div>';
 
   var lu=tl().gd;
-  var gddNames=unitNames[curTeam].gdd||["","",""];
 
   html+='<div class="gp-plan-grid">';
 
   html+='<div class="gp-pcol"><div class="gp-sec"><div class="gp-sec-title">'+esc(TEAM_LABELS[curTeam])+' LINEUP</div>';
-  html+='<div class="gp-sub-title">FORWARDS</div><div class="gp-line-grp">'+gsFlat(GDF_KEYS).map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
-  GDD_KEYS.forEach(function(pair,i){
-    html+='<div class="gp-sub-title">'+(gddNames[i]?esc(gddNames[i]).toUpperCase():"D SET "+(i+1))+'</div><div class="gp-line-grp">'+pair.map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
+  GP_ROWS.forEach(function(row){
+    html+='<div class="gp-sub-title">'+row.label+'</div><div class="gp-line-grp">'+row.keys.map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
   });
-  html+='<div class="gp-sub-title">GOALIES DRESSING</div><div class="gp-line-grp">'+GD_G_KEYS.map(function(k){return gpOurCardHTML(lu,k);}).join("")+'</div>';
   html+='</div></div>';
 
   html+='<div class="gp-pcol"><div class="gp-sec"><div class="gp-sec-title gp-opp-title">OPPOSITION LINEUP</div>';
-  html+='<div class="gp-sub-title gp-opp-sub">FORWARDS</div><div class="gp-line-grp">'+gsFlat(GDF_KEYS).map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
-  GDD_KEYS.forEach(function(pair,i){
-    html+='<div class="gp-sub-title gp-opp-sub">D SET '+(i+1)+'</div><div class="gp-line-grp">'+pair.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
+  GP_ROWS.forEach(function(row){
+    html+='<div class="gp-sub-title gp-opp-sub">'+row.label+'</div><div class="gp-line-grp">'+row.keys.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   });
-  html+='<div class="gp-sub-title gp-opp-sub">GOALIES</div><div class="gp-line-grp">'+GD_G_KEYS.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   html+='<div class="gp-sub-title gp-opp-sub">POWER PLAY UNIT</div><div class="gp-line-grp">'+GS_OPP_PP_KEYS.map(function(k){return gpCardHTML(s,k);}).join("")+'</div>';
   html+='</div></div>';
 
