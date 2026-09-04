@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v6.0 — added Game Strategy tab (opponent roster, concepts, special teams, keys/goals/notes) bundled into Game Day save/load; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v6.1 — Strategy tab now swipes between 2 pages (keys/goals/concepts/special teams, then opposition roster grid); denser multi-column layout; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,6 +100,15 @@ select option{background:#1a1a1a;}
 .gs-text-inp{flex:1;background:#181818;border:1px solid #2a2a2a;border-radius:3px;color:#fff;font-size:11px;padding:5px 6px;font-family:'Barlow Condensed',sans-serif;outline:none;}
 .gs-notes{width:100%;min-height:90px;background:#181818;border:1px solid #2a2a2a;border-radius:3px;color:#fff;font-size:12px;padding:6px;font-family:'Barlow Condensed',sans-serif;outline:none;resize:vertical;}
 .gs-card{background:#111;border:1px solid #222;border-radius:5px;padding:8px;}
+.gs-field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 10px;}
+.gs-field{margin-bottom:0;}
+.gs-dot{width:8px;height:8px;border-radius:50%;background:#333;cursor:pointer;}
+.gs-dot.on{background:#FF6B00;}
+.gs-oline{flex:1;min-height:0;display:flex;gap:3px;}
+.gs-obox{flex:1;min-height:0;display:flex;flex-direction:column;border:1px solid #2a2a2a;border-radius:4px;overflow:hidden;background:#111;}
+.gs-obox-lbl{flex-shrink:0;background:#1c1c1c;color:#4a90d9;font-size:8px;font-weight:700;text-align:center;padding:1px 0;font-family:'Oswald',sans-serif;letter-spacing:.05em;}
+.gs-obox-num{flex-shrink:0;width:100%;background:transparent;border:none;border-bottom:1px solid #222;color:#FF6B00;font-size:13px;font-weight:700;text-align:center;padding:2px 0;outline:none;font-family:'Oswald',sans-serif;}
+.gs-obox-name{flex:1;min-height:0;width:100%;background:transparent;border:none;color:#fff;font-size:9px;text-align:center;padding:1px;outline:none;font-family:'Barlow Condensed',sans-serif;}
 #pgpk{flex-direction:column;}
 #pk-grid{flex:1;min-height:0;display:flex;flex-direction:column;gap:0;overflow:hidden;touch-action:none;padding:0 5px 2px;}
 .pk-section-lbl{font-size:7px;color:#FF6B00;letter-spacing:.1em;padding:1px 3px;flex-shrink:0;}
@@ -178,7 +187,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.0</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.1</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -217,7 +226,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.0</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.1</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -480,7 +489,15 @@ select option{background:#1a1a1a;}
     <button id="btn-clear-gs" style="padding:2px 8px;background:#181818;color:#aaa;border:1px solid #333;border-radius:3px;font-size:8px;font-weight:700;">CLEAR</button>
   </div>
   <div id="gs-summary" style="flex-shrink:0;background:#111;padding:5px 8px;font-size:11px;color:#ccc;font-family:'Barlow Condensed',sans-serif;border-bottom:1px solid #1a1a1a;font-weight:700;"></div>
-  <div id="gs-body" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 8px 24px;display:flex;flex-direction:column;gap:12px;"></div>
+  <div id="gs-pager" style="flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;">
+    <div id="gs-page1" style="flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 8px 16px;display:flex;flex-direction:column;gap:8px;"></div>
+    <div id="gs-page2" style="flex:0 0 100%;scroll-snap-align:start;overflow:hidden;padding:6px 6px 4px;display:flex;flex-direction:column;gap:3px;"></div>
+  </div>
+  <div id="gs-dots" style="flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:8px;padding:3px;background:#0a0a0a;border-top:1px solid #1a1a1a;">
+    <div class="gs-dot on" data-pg="0" onclick="gsGoToPage(0)"></div>
+    <span style="font-size:7px;color:#444;letter-spacing:.08em;">SWIPE</span>
+    <div class="gs-dot" data-pg="1" onclick="gsGoToPage(1)"></div>
+  </div>
 </div>
 
 <div id="pgps" class="pg lineup-pg">
@@ -1613,10 +1630,10 @@ function gsNiceLabel(k){
   if(k==="G1"||k==="G2")return k;
   var parts=k.split("_");return parts[0]+" "+LPL[k];
 }
-function gsRosterRowHTML(k){
-  return '<div class="gs-roster-row"><div class="gs-roster-pos">'+gsNiceLabel(k)+'</div>'+
-    '<input class="gs-roster-name" data-gs-opp-name="'+k+'" placeholder="Player name"/>'+
-    '<input class="gs-roster-num" data-gs-opp-num="'+k+'" placeholder="#" maxlength="3"/></div>';
+function gsOboxHTML(k){
+  return '<div class="gs-obox"><div class="gs-obox-lbl">'+gsNiceLabel(k)+'</div>'+
+    '<input class="gs-obox-num" data-gs-opp-num="'+k+'" placeholder="#" maxlength="3"/>'+
+    '<input class="gs-obox-name" data-gs-opp-name="'+k+'" placeholder="Name"/></div>';
 }
 function renderGSSummary(){
   var m=gdMeta[curTeam];
@@ -1628,63 +1645,72 @@ function renderGSSummary(){
   if(m.gameType)bits.push(m.gameType);
   document.getElementById("gs-summary").textContent=bits.length?bits.join("  ·  "):"No game info set yet — fill in Opponent/Date on the Game Day tab";
 }
+function gsGoToPage(i){
+  var pager=document.getElementById("gs-pager");
+  pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"});
+}
 function renderGS(){
   renderGSSummary();
   var s=gdStrategy[curTeam];
-  var body=document.getElementById("gs-body");
+  var p1=document.getElementById("gs-page1");
+  var p2=document.getElementById("gs-page2");
   var html="";
 
-  html+='<div class="gs-card"><div class="gs-sec-hdr">OPPOSITION ROSTER</div><div style="margin-top:6px;">';
-  html+='<div class="gs-roster-grp">FORWARDS</div>';
-  GDF_KEYS.forEach(function(line){line.forEach(function(k){html+=gsRosterRowHTML(k);});});
-  html+='<div class="gs-roster-grp" style="margin-top:6px;">DEFENSE</div>';
-  GDD_KEYS.forEach(function(pair){pair.forEach(function(k){html+=gsRosterRowHTML(k);});});
-  html+='<div class="gs-roster-grp" style="margin-top:6px;">GOALIES</div>';
-  GD_G_KEYS.forEach(function(k){html+=gsRosterRowHTML(k);});
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+  html+='<div class="gs-card" style="flex:1;min-width:150px;"><div class="gs-sec-hdr">KEYS TO THE GAME</div><div style="margin-top:6px;">';
+  [0,1,2].forEach(function(i){html+='<div class="gs-text-row"><div class="gs-text-lbl">KEY '+(i+1)+'</div><input class="gs-text-inp" data-gs-key="'+i+'" placeholder="Type a key..."/></div>';});
   html+='</div></div>';
+  html+='<div class="gs-card" style="flex:1;min-width:150px;"><div class="gs-sec-hdr">GOALS</div><div style="margin-top:6px;">';
+  [0,1,2].forEach(function(i){html+='<div class="gs-text-row"><div class="gs-text-lbl">GOAL '+(i+1)+'</div><input class="gs-text-inp" data-gs-goal="'+i+'" placeholder="Type a goal..."/></div>';});
+  html+='</div></div>';
+  html+='</div>';
 
-  html+='<div class="gs-card"><div class="gs-sec-hdr">TEAM CONCEPTS</div><div style="margin-top:6px;">';
+  html+='<div class="gs-card"><div class="gs-sec-hdr">TEAM CONCEPTS</div><div class="gs-field-grid" style="margin-top:6px;">';
   GS_CONCEPTS.forEach(function(f){html+=gsFieldHTML(f);});
   html+='</div></div>';
 
   html+='<div class="gs-card"><div class="gs-sec-hdr">SPECIAL TEAMS</div>';
-  html+='<div class="gs-sub-hdr" style="margin-top:6px;">POWER PLAY</div>';
+  html+='<div class="gs-sub-hdr" style="margin-top:6px;">POWER PLAY</div><div class="gs-field-grid">';
   GS_PP.forEach(function(f){html+=gsFieldHTML(f);});
-  html+='<div class="gs-sub-hdr">PENALTY KILL</div>';
+  html+='</div><div class="gs-sub-hdr" style="margin-top:6px;">PENALTY KILL</div><div class="gs-field-grid">';
   GS_PK.forEach(function(f){html+=gsFieldHTML(f);});
-  html+='</div>';
-
-  html+='<div class="gs-card"><div class="gs-sec-hdr">KEYS TO THE GAME</div><div style="margin-top:6px;">';
-  [0,1,2].forEach(function(i){html+='<div class="gs-text-row"><div class="gs-text-lbl">KEY '+(i+1)+'</div><input class="gs-text-inp" data-gs-key="'+i+'" placeholder="Type a key..."/></div>';});
-  html+='</div></div>';
-
-  html+='<div class="gs-card"><div class="gs-sec-hdr">GOALS</div><div style="margin-top:6px;">';
-  [0,1,2].forEach(function(i){html+='<div class="gs-text-row"><div class="gs-text-lbl">GOAL '+(i+1)+'</div><input class="gs-text-inp" data-gs-goal="'+i+'" placeholder="Type a goal..."/></div>';});
   html+='</div></div>';
 
   html+='<div class="gs-card"><div class="gs-sec-hdr">NOTES</div><div style="margin-top:6px;"><textarea class="gs-notes" id="gs-notes-inp" placeholder="Any other notes..."></textarea></div></div>';
 
-  body.innerHTML=html;
+  p1.innerHTML=html;
+
+  var html2="";
+  GDF_KEYS.forEach(function(line){
+    html2+='<div class="gs-oline">'+line.map(gsOboxHTML).join("")+'</div>';
+  });
+  GDD_KEYS.forEach(function(pair){
+    html2+='<div class="gs-oline">'+pair.map(gsOboxHTML).join("")+'</div>';
+  });
+  html2+='<div class="gs-oline">'+GD_G_KEYS.map(gsOboxHTML).join("")+'</div>';
+  p2.innerHTML=html2;
 
   /* wire opposition roster */
-  body.querySelectorAll("[data-gs-opp-name]").forEach(function(el){
-    var k=el.getAttribute("data-gs-opp-name");
-    el.value=(s.opp[k]&&s.opp[k].name)||"";
-    el.oninput=function(){ s.opp[k]=s.opp[k]||{};s.opp[k].name=this.value;gsSync(); };
-  });
-  body.querySelectorAll("[data-gs-opp-num]").forEach(function(el){
-    var k=el.getAttribute("data-gs-opp-num");
-    el.value=(s.opp[k]&&s.opp[k].num)||"";
-    el.oninput=function(){ s.opp[k]=s.opp[k]||{};s.opp[k].num=this.value;gsSync(); };
+  [p1,p2].forEach(function(root){
+    root.querySelectorAll("[data-gs-opp-name]").forEach(function(el){
+      var k=el.getAttribute("data-gs-opp-name");
+      el.value=(s.opp[k]&&s.opp[k].name)||"";
+      el.oninput=function(){ s.opp[k]=s.opp[k]||{};s.opp[k].name=this.value;gsSync(); };
+    });
+    root.querySelectorAll("[data-gs-opp-num]").forEach(function(el){
+      var k=el.getAttribute("data-gs-opp-num");
+      el.value=(s.opp[k]&&s.opp[k].num)||"";
+      el.oninput=function(){ s.opp[k]=s.opp[k]||{};s.opp[k].num=this.value;gsSync(); };
+    });
   });
 
   /* wire dropdown fields (concepts + pp + pk share one mechanism) */
   var ALL_FIELDS={};
   GS_CONCEPTS.concat(GS_PP).concat(GS_PK).forEach(function(f){ALL_FIELDS[f.id]=f;});
-  body.querySelectorAll("[data-gs-id]").forEach(function(sel){
+  p1.querySelectorAll("[data-gs-id]").forEach(function(sel){
     var id=sel.getAttribute("data-gs-id");
     var section=(GS_CONCEPTS.indexOf(ALL_FIELDS[id])>-1)?"concepts":(GS_PP.indexOf(ALL_FIELDS[id])>-1?"pp":"pk");
-    var other=body.querySelector('[data-gs-other="'+id+'"]');
+    var other=p1.querySelector('[data-gs-other="'+id+'"]');
     var saved=s[section][id]||"";
     var PRESETS=ALL_FIELDS[id].opts;
     if(saved && PRESETS.indexOf(saved)===-1){
@@ -1701,12 +1727,12 @@ function renderGS(){
   });
 
   /* wire keys / goals / notes */
-  body.querySelectorAll("[data-gs-key]").forEach(function(el){
+  p1.querySelectorAll("[data-gs-key]").forEach(function(el){
     var i=+el.getAttribute("data-gs-key");
     el.value=s.keys[i]||"";
     el.oninput=function(){s.keys[i]=this.value;gsSync();};
   });
-  body.querySelectorAll("[data-gs-goal]").forEach(function(el){
+  p1.querySelectorAll("[data-gs-goal]").forEach(function(el){
     var i=+el.getAttribute("data-gs-goal");
     el.value=s.goals[i]||"";
     el.oninput=function(){s.goals[i]=this.value;gsSync();};
@@ -1714,6 +1740,13 @@ function renderGS(){
   var notesEl=document.getElementById("gs-notes-inp");
   notesEl.value=s.notes||"";
   notesEl.oninput=function(){s.notes=this.value;gsSync();};
+
+  /* dot sync on swipe */
+  var pager=document.getElementById("gs-pager");
+  pager.onscroll=function(){
+    var i=Math.round(pager.scrollLeft/pager.clientWidth);
+    document.querySelectorAll(".gs-dot").forEach(function(d,idx){d.classList.toggle("on",idx===i);});
+  };
 }
 
 
