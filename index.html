@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v6.4 — Game Plan view now shows our own Game Day lineup (lines/D sets/goalies) above the opposition lineup; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v6.5 — FIX: Strategy tab going fully blank — Game Plan view could throw on real synced data and abort the whole render; now built last and never breaks the editable pages; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -204,7 +204,7 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.4</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v6.5</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
     <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
@@ -243,7 +243,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.4</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v6.5</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -1699,7 +1699,7 @@ function gpFieldRows(s,section,fields){
 }
 function gsFlat(arr){var out=[];arr.forEach(function(a){out=out.concat(a);});return out;}
 function renderGSPlan(){
-  var s=gdStrategy[curTeam];
+  var s=gsNormalize(gdStrategy[curTeam]);
   var m=gdMeta[curTeam];
   var p3=document.getElementById("gs-page3");
   var html="";
@@ -1752,10 +1752,19 @@ function renderGSPlan(){
 
   p3.innerHTML=html;
 }
+function gsNormalize(s){
+  if(!s.opp)s.opp={};
+  if(!s.concepts)s.concepts={};
+  if(!s.pp)s.pp={};
+  if(!s.pk)s.pk={};
+  if(!s.keys||!s.keys.length)s.keys=["","",""];
+  if(!s.goals||!s.goals.length)s.goals=["","",""];
+  if(typeof s.notes!=="string")s.notes="";
+  return s;
+}
 function renderGS(){
   renderGSSummary();
-  renderGSPlan();
-  var s=gdStrategy[curTeam];
+  var s=gsNormalize(gdStrategy[curTeam]);
   var p1=document.getElementById("gs-page1");
   var p2=document.getElementById("gs-page2");
   var html="";
@@ -1852,6 +1861,9 @@ function renderGS(){
     var i=Math.round(pager.scrollLeft/pager.clientWidth);
     document.querySelectorAll(".gs-dot").forEach(function(d,idx){d.classList.toggle("on",idx===i);});
   };
+
+  /* build the read-only Game Plan view last, and never let it break the editable pages above */
+  try{ renderGSPlan(); }catch(e){ console.error("renderGSPlan failed:",e); }
 }
 
 
