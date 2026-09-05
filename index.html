@@ -1,4 +1,4 @@
-<!-- MinookaLineUp26 v8.2 — FIX: main SAVE/LOAD (save icon next to print) never included Game Day lineup — loading any saved plan left Game Day untouched; now included, plus loaded plan is now labeled in the list; tap version badge to force refresh -->
+<!-- MinookaLineUp26 v8.3 — Opponent field auto-suggests past teams as you type; date shows day-of-week (Fri 9/11/26); added game start time; tap version badge to force refresh -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -246,11 +246,14 @@ select option{background:#1a1a1a;}
       <img id="logo-img" src="logo.png" alt="Minooka Hockey" style="width:34px;height:34px;object-fit:contain;display:block;"/>
       <span id="logo-fallback" style="display:none;">🏒</span>
     </div>
-    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v8.2</div></div></div>
+    <div><div class="lname">MINOOKA</div><div style="display:flex;align-items:center;gap:5px;"><div class="lsub">HOCKEY</div><div class="lver">v8.3</div></div></div>
   </div>
   <div id="gd-meta-bar" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
-    <input id="gd-opponent" placeholder="Opponent" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <input id="gd-opponent" placeholder="Opponent" list="gd-opponent-list" style="width:136px;font-size:9px;padding:4px 5px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <datalist id="gd-opponent-list"></datalist>
     <input id="gd-date" type="date" style="width:96px;font-size:9px;padding:4px 3px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
+    <span id="gd-date-dow" style="font-size:9px;color:#888;font-family:'Barlow Condensed',sans-serif;font-weight:700;white-space:nowrap;"></span>
+    <input id="gd-time" type="time" style="width:78px;font-size:9px;padding:4px 3px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;font-family:'Barlow Condensed',sans-serif;outline:none;"/>
     <select id="gd-ha" title="Home / Away" style="width:56px;font-size:9px;padding:4px 2px;background:#181818;border:1px solid #333;border-radius:3px;color:#fff;">
       <option value="H">HOME</option>
       <option value="A">AWAY</option>
@@ -285,7 +288,7 @@ select option{background:#1a1a1a;}
     <button id="nb-save" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #FF6B00;background:#FF6B00;color:#fff;white-space:nowrap;flex-shrink:0;">💾</button>
     <button id="nb-print" style="padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #555;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">🖨️</button>
     <button id="nb-admin" style="display:none;padding:3px 7px;font-size:8px;font-weight:700;border-radius:3px;border:1px solid #aaa;background:transparent;color:#aaa;white-space:nowrap;flex-shrink:0;">ADMIN</button>
-    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v8.2</span>
+    <span id="nb-ver" title="Tap to force refresh" style="font-size:7px;font-weight:700;color:#444;white-space:nowrap;flex-shrink:0;cursor:pointer;user-select:none;letter-spacing:0.03em;" onclick="if(confirm('Force refresh to latest version?')){caches&&caches.keys().then(function(ks){Promise.all(ks.map(function(k){return caches.delete(k);})).then(function(){location.reload(true);});}).catch(function(){location.reload(true);});}">v8.3</span>
   </div>
   </div>
   <div id="hdr-row2"></div>
@@ -732,7 +735,30 @@ var GP_ROWS=[
   {label:"D3 / GOALIES",keys:GDD_KEYS[2].concat(GD_G_KEYS)}
 ];
 var gdGames={v:{},jv:{},tr:{}};   /* archived Game Day lineups, keyed by id */
-var gdMeta={v:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},jv:{opponent:"",date:"",ha:"H",gameType:"League",venue:""},tr:{opponent:"",date:"",ha:"H",gameType:"League",venue:""}};
+var gdMeta={v:{opponent:"",date:"",time:"",ha:"H",gameType:"League",venue:""},jv:{opponent:"",date:"",time:"",ha:"H",gameType:"League",venue:""},tr:{opponent:"",date:"",time:"",ha:"H",gameType:"League",venue:""}};
+var knownOpponents=[];
+function gdDow(dateStr){
+  if(!dateStr)return"";
+  var parts=dateStr.split("-");
+  if(parts.length!==3)return"";
+  var dt=new Date(+parts[0],+parts[1]-1,+parts[2]);
+  var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  return DOW[dt.getDay()]+" "+(+parts[1])+"/"+(+parts[2])+"/"+parts[0].slice(2);
+}
+function renderOpponentDatalist(){
+  var dl=document.getElementById("gd-opponent-list");
+  if(!dl)return;
+  dl.innerHTML=knownOpponents.slice().sort().map(function(n){return '<option value="'+esc(n)+'"></option>';}).join("");
+}
+function addKnownOpponent(name){
+  name=(name||"").trim();
+  if(!name)return;
+  var exists=knownOpponents.some(function(n){return n.toLowerCase()===name.toLowerCase();});
+  if(exists)return;
+  knownOpponents.push(name);
+  renderOpponentDatalist();
+  if(db) db.ref("knownOpponents").set(knownOpponents);
+}
 
 /* ── Game Strategy ── */
 var GS_PP_OPTS=["1-3-1","41 Czech","Overload","Umbrella"];
@@ -1663,15 +1689,20 @@ function wireGDMeta(){
   var m=gdMeta[curTeam];
   var oInp=document.getElementById("gd-opponent"),dInp=document.getElementById("gd-date"),hSel=document.getElementById("gd-ha");
   var tSel=document.getElementById("gd-type"),tOther=document.getElementById("gd-type-other"),vInp=document.getElementById("gd-venue");
+  var timeInp=document.getElementById("gd-time"),dowEl=document.getElementById("gd-date-dow");
   var PRESETS=["Practice","Scrimmage","League","Tournament"];
   oInp.value=m.opponent||"";dInp.value=m.date||"";hSel.value=m.ha||"H";vInp.value=m.venue||"";
+  timeInp.value=m.time||"";
+  dowEl.textContent=gdDow(m.date);
+  renderOpponentDatalist();
   if(m.gameType && PRESETS.indexOf(m.gameType)===-1){
     tSel.value="Other";tOther.style.display="";tOther.value=m.gameType;
   } else {
     tSel.value=m.gameType||"League";tOther.style.display="none";tOther.value="";
   }
   oInp.oninput=function(){m.opponent=this.value;if(db)db.ref("gdMeta/"+curTeam+"/opponent").set(this.value);};
-  dInp.oninput=function(){m.date=this.value;if(db)db.ref("gdMeta/"+curTeam+"/date").set(this.value);};
+  dInp.oninput=function(){m.date=this.value;dowEl.textContent=gdDow(this.value);if(db)db.ref("gdMeta/"+curTeam+"/date").set(this.value);};
+  timeInp.oninput=function(){m.time=this.value;if(db)db.ref("gdMeta/"+curTeam+"/time").set(this.value);};
   hSel.onchange=function(){m.ha=this.value;if(db)db.ref("gdMeta/"+curTeam+"/ha").set(this.value);};
   vInp.oninput=function(){m.venue=this.value;if(db)db.ref("gdMeta/"+curTeam+"/venue").set(this.value);};
   tSel.onchange=function(){
@@ -1724,7 +1755,8 @@ function renderGSSummary(){
   var m=gdMeta[curTeam];
   var bits=[];
   if(m.opponent)bits.push("vs "+m.opponent);
-  if(m.date)bits.push(m.date);
+  if(m.date)bits.push(gdDow(m.date));
+  if(m.time)bits.push(m.time);
   bits.push(m.ha==="A"?"AWAY":"HOME");
   if(m.venue)bits.push(m.venue);
   if(m.gameType)bits.push(m.gameType);
@@ -1938,12 +1970,13 @@ function saveGDGame(){
   var opp=document.getElementById("gd-opponent").value.trim();
   if(!opp){alert("Enter the opponent's name first");return;}
   var date=document.getElementById("gd-date").value;
+  var time=document.getElementById("gd-time").value;
   var ha=document.getElementById("gd-ha").value;
   var gameType=gdMeta[curTeam].gameType||"League";
   var venue=document.getElementById("gd-venue").value.trim();
   var id="g"+Date.now();
   var entry={
-    opponent:opp,date:date,ha:ha,gameType:gameType,venue:venue,
+    opponent:opp,date:date,time:time,ha:ha,gameType:gameType,venue:venue,
     gd:JSON.parse(JSON.stringify(tl().gd)),
     gdf:JSON.parse(JSON.stringify(unitNames[curTeam].gdf)),
     gdd:JSON.parse(JSON.stringify(unitNames[curTeam].gdd)),
@@ -1953,6 +1986,7 @@ function saveGDGame(){
   if(!gdGames[curTeam]) gdGames[curTeam]={};
   gdGames[curTeam][id]=entry;
   if(db) db.ref("gdGames/"+curTeam+"/"+id).set(entry);
+  addKnownOpponent(opp);
   alert("Saved lineup for "+opp);
 }
 function openGDArchive(){
@@ -1969,7 +2003,7 @@ function renderGDArchiveList(){
   ids.forEach(function(id){
     var g=games[id];
     var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:6px;background:#1a1a1a;border-radius:4px;padding:5px 8px;";
-    var sub=[g.gameType||"",g.date||"",g.ha==="A"?"AWAY":g.ha==="H"?"HOME":"",g.venue||""].filter(Boolean).join(" · ");
+    var sub=[g.gameType||"",gdDow(g.date)||g.date||"",g.time||"",g.ha==="A"?"AWAY":g.ha==="H"?"HOME":"",g.venue||""].filter(Boolean).join(" · ");
     row.innerHTML='<div style="flex:1;"><div style="font-size:12px;color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;">'+esc(g.opponent)+'</div>'+(sub?'<div style="font-size:9px;color:#555;">'+esc(sub)+'</div>':'')+'</div><button style="padding:3px 9px;background:#FF6B00;color:#fff;border:none;border-radius:3px;font-size:9px;font-weight:700;">LOAD</button><button style="padding:3px 9px;background:#181818;color:#c03;border:1px solid #222;border-radius:3px;font-size:9px;font-weight:700;">DEL</button>';
     (function(gid){
       row.querySelectorAll("button")[0].onclick=function(){loadGDGame(gid);};
@@ -1985,7 +2019,7 @@ function loadGDGame(id){
   tl().gd=snap.gd||{};
   unitNames[curTeam].gdf=snap.gdf||["","","",""];
   unitNames[curTeam].gdd=snap.gdd||["","",""];
-  gdMeta[curTeam]={opponent:snap.opponent||"",date:snap.date||"",ha:snap.ha||"H",gameType:snap.gameType||"League",venue:snap.venue||""};
+  gdMeta[curTeam]={opponent:snap.opponent||"",date:snap.date||"",time:snap.time||"",ha:snap.ha||"H",gameType:snap.gameType||"League",venue:snap.venue||""};
   gdStrategy[curTeam]=snap.strategy||gsEmpty();
   closeGDArchive();
   showPg("gd");
@@ -2625,10 +2659,14 @@ function initFirebase(){
       var v=snap.val()||{};
       ["v","jv","tr"].forEach(function(tm){
         var tv=v[tm]||{};
-        gdMeta[tm]={opponent:tv.opponent||"",date:tv.date||"",ha:tv.ha||"H",gameType:tv.gameType||"League",venue:tv.venue||""};
+        gdMeta[tm]={opponent:tv.opponent||"",date:tv.date||"",time:tv.time||"",ha:tv.ha||"H",gameType:tv.gameType||"League",venue:tv.venue||""};
       });
       if(curPage==="gd")wireGDMeta();
       if(curPage==="gs"){renderGSSummary();try{renderGSPlan();}catch(e){console.error("renderGSPlan failed:",e);}}
+    });
+    db.ref("knownOpponents").on("value",function(snap){
+      knownOpponents=snap.val()||[];
+      renderOpponentDatalist();
     });
     db.ref("gdStrategy").on("value",function(snap){
       if(loading)return;
